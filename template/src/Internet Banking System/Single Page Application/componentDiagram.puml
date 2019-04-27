@@ -1,0 +1,23 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND
+
+title Component diagram for Web Application
+
+Container(api, "API Application", "java and Spring MVC", "Delivers the static content and the internet banking single page application.")
+
+Container_Boundary(spa, "Single Page Application") {
+    Component(routing, "Routing", "React router", "Handler slient side routing")
+    Component(store, "Data Store", "Redux", "The central object holding the application state")
+    Component(login, "Login form", "React Class", "The login page")
+    Component(profile, "Profile Page", "React Class", "The page where the logged in user can view and edit his/her information")
+}
+
+Rel(spa, api, "Uses", "JSON/HTTPS")
+
+Rel(login, store, "Uses");
+Rel(routing, store, "Uses");
+Rel(profile, store, "Uses");
+
+@enduml

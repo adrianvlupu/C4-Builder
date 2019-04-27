@@ -1,0 +1,44 @@
+{
+  "name": "c4builder",
+  "version": "0.1.0",
+  "description": "A CLI tool designed to compile a folder structure of markdowns and plant uml files into a site, pdf, single file markdown or a collection of markdowns with links",
+  "main": "index.js",
+  "bin": {
+    "c4builder": "./index.js"
+  },
+  "homepage": "https://adrianvlupu.github.io/C4-Builder/",
+  "bugs": {
+    "url": "https://github.com/adrianvlupu/C4-Builder/issues",
+    "email": "adrianvlupu@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adrianvlupu/C4-Builder.git"
+  },
+  "scripts": {},
+  "keywords": [
+    "C4",
+    "C4Model",
+    "PlantUML",
+    "Markdown",
+    "Documentation",
+    "Software Architecture",
+    "PDF",
+    "Generator"
+  ],
+  "author": "Adrian Victor Lupu",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "configstore": "^4.0.0",
+    "figlet": "^1.2.1",
+    "fs-extra": "^7.0.1",
+    "inquirer": "^6.3.1",
+    "joi": "^14.3.1",
+    "markdown-pdf": "^9.0.0",
+    "node-plantuml": "^0.7.0",
+    "recursive-readdir": "^2.2.2",
+    "rimraf": "^2.6.2",
+    "zlib": "^1.0.5"
+  }
+}

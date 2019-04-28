@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const rimraf = require('rimraf');
 const docsifyTemplate = require('./docsify.template.js');
-const markdownpdf = require("markdown-pdf");
+const mdpdf = require('mdpdf');
 
 const cli = require('./cli');
 
@@ -41,7 +41,7 @@ let INCLUDE_LINK_TO_DIAGRAM = false; //applies to all
 
 let DIAGRAM_FORMAT = 'svg'; //applies to all
 let PDF_OPTIONS = {
-    paperFormat: 'A4',
+    // paperFormat: 'A5',
     cssPath: path.join(__dirname, 'pdf.css')
 };
 
@@ -250,17 +250,23 @@ const generateCompletePDF = async (tree) => {
         DIST_FOLDER,
         `${PROJECT_NAME}_TEMP.md`
     ), MD);
-    let stream = fs.createWriteStream(path.join(
-        DIST_FOLDER,
-        `${PROJECT_NAME}.pdf`
-    ));
-    //pdf
-    fs.createReadStream(path.join(
-        DIST_FOLDER,
-        `${PROJECT_NAME}_TEMP.md`
-    )).pipe(markdownpdf(PDF_OPTIONS)).pipe(stream);
-
-    await new Promise(resolve => stream.on('finish', resolve));
+    await mdpdf.convert({
+        source: path.join(
+            process.cwd(),
+            DIST_FOLDER,
+            `${PROJECT_NAME}_TEMP.md`
+        ),
+        destination: path.join(
+            process.cwd(),
+            DIST_FOLDER,
+            `${PROJECT_NAME}.pdf`
+        ),
+        styles: path.join(__dirname, 'pdf.css'),
+        pdf: {
+            format: 'A4',
+            orientation: 'portrait'
+        }
+    });
 
     //remove temp file
     rimraf.sync(path.join(
@@ -406,19 +412,25 @@ const generatePDF = async (tree, onProgress) => {
             item.dir.replace(ROOT_FOLDER, ''),
             `${MD_FILE_NAME}_TEMP.md`
         ), MD).then(() => {
-            let stream = fs.createWriteStream(path.join(
-                DIST_FOLDER,
-                item.dir.replace(ROOT_FOLDER, ''),
-                `${MD_FILE_NAME}.pdf`
-            ));
-            //pdf
-            fs.createReadStream(path.join(
-                DIST_FOLDER,
-                item.dir.replace(ROOT_FOLDER, ''),
-                `${MD_FILE_NAME}_TEMP.md`
-            )).pipe(markdownpdf(PDF_OPTIONS)).pipe(stream);
-
-            return new Promise(resolve => stream.on('finish', resolve));
+            return mdpdf.convert({
+                source: path.join(
+                    process.cwd(),
+                    DIST_FOLDER,
+                    item.dir.replace(ROOT_FOLDER, ''),
+                    `${MD_FILE_NAME}_TEMP.md`
+                ),
+                destination: path.join(
+                    process.cwd(),
+                    DIST_FOLDER,
+                    item.dir.replace(ROOT_FOLDER, ''),
+                    `${MD_FILE_NAME}.pdf`
+                ),
+                styles: path.join(__dirname, 'pdf.css'),
+                pdf: {
+                    format: 'A4',
+                    orientation: 'portrait'
+                }
+            });
         }).then(() => {
             //remove temp file
             rimraf.sync(path.join(
@@ -524,7 +536,7 @@ const build = async () => {
     //actual build
     console.log(chalk.green(`\nbuilding documentation in ./${DIST_FOLDER}`));
     let tree = await generateTree(ROOT_FOLDER);
-    console.log(`${tree.length} folders created`);
+    console.log(`parsed ${tree.length} folders`);
     if (GENERATE_LOCAL_IMAGES) {
         console.log(chalk.blue('generating images'));
         await generateImages(tree, (count, total) => {

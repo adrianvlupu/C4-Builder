@@ -35,7 +35,7 @@
     "fs-extra": "^7.0.1",
     "inquirer": "^6.3.1",
     "joi": "^14.3.1",
-    "markdown-pdf": "^9.0.0",
+    "mdpdf": "^2.0.4",
     "node-plantuml": "^0.7.0",
     "recursive-readdir": "^2.2.2",
     "rimraf": "^2.6.2",

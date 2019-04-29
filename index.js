@@ -38,12 +38,9 @@ let INCLUDE_NAVIGATION = false; //applies to GENERATE_MD
 let INCLUDE_BREADCRUMBS = true; //applies to GENERATE_MD, GENERATE_COMPLETE_MD_FILE, GENERATE_PDF, GENERATE_COMPLETE_PDF_FILE
 let INCLUDE_TABLE_OF_CONTENTS = true; //applies to GENERATE_MD
 let INCLUDE_LINK_TO_DIAGRAM = false; //applies to all
+let PDF_CSS = path.join(__dirname, 'pdf.css');
 
 let DIAGRAM_FORMAT = 'svg'; //applies to all
-let PDF_OPTIONS = {
-    paperFormat: 'A4',
-    cssPath: path.join(__dirname, 'pdf.css')
-};
 
 const plantUmlServerUrl = content => `https://www.plantuml.com/plantuml/svg/0/${urlTextFrom(content)}`;
 
@@ -258,7 +255,10 @@ const generateCompletePDF = async (tree) => {
     fs.createReadStream(path.join(
         DIST_FOLDER,
         `${PROJECT_NAME}_TEMP.md`
-    )).pipe(markdownpdf(PDF_OPTIONS)).pipe(stream);
+    )).pipe(markdownpdf({
+        paperFormat: 'A4',
+        cssPath: PDF_CSS
+    })).pipe(stream);
 
     await new Promise(resolve => stream.on('finish', resolve));
 
@@ -416,7 +416,10 @@ const generatePDF = async (tree, onProgress) => {
                 DIST_FOLDER,
                 item.dir.replace(ROOT_FOLDER, ''),
                 `${MD_FILE_NAME}_TEMP.md`
-            )).pipe(markdownpdf(PDF_OPTIONS)).pipe(stream);
+            )).pipe(markdownpdf({
+                paperFormat: 'A4',
+                cssPath: PDF_CSS
+            })).pipe(stream);
 
             return new Promise(resolve => stream.on('finish', resolve));
         }).then(() => {
@@ -524,7 +527,7 @@ const build = async () => {
     //actual build
     console.log(chalk.green(`\nbuilding documentation in ./${DIST_FOLDER}`));
     let tree = await generateTree(ROOT_FOLDER);
-    console.log(`${tree.length} folders created`);
+    console.log(chalk.blue(`parsed ${tree.length} folders`));
     if (GENERATE_LOCAL_IMAGES) {
         console.log(chalk.blue('generating images'));
         await generateImages(tree, (count, total) => {
@@ -590,6 +593,7 @@ const build = async () => {
     INCLUDE_BREADCRUMBS = conf.get('includeBreadcrumbs');
     WEB_THEME = conf.get('webTheme');
     REPO_NAME = conf.get('repoUrl');
+    PDF_CSS = conf.get('pdfCss') || PDF_CSS;
 
     await build();
 

@@ -1,7 +1,4 @@
-body {
-    font-size: 30px;
-}
-
 img {
-    min-width: 60%;
+    min-width: 40%;
+    max-width: 100%;
 }

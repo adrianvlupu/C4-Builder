@@ -204,6 +204,10 @@ By default this is disabled. If enabled, the output will no longer include the a
 
 The current entity structure is inserted after the header
 
+### Custom pdf
+
+If defined, this css is used in the generation of the pdf files. It is useful for changing the font size `body{font-size:26px;}` on devices with high resolution screens.
+
 # Limitations
 
 - The current version does not support source and destination folders deeper than one level.
@@ -212,15 +216,7 @@ The current entity structure is inserted after the header
 
 # Future plans
 
-- I intend on making the cli tool overcome the two limitations mentioned.
-
-- Adding more options like --pdf for quicker export and not having to configure anything. 
-
-- A caching mechanism for local image generation.
-
-- Create a better project template
-
-Most importantly I would like to bind the **build** phase to the C4 model. It could parse the diagrams and know what Person/System/Component/Container is related to what and help with additional validation. Maybe even export to [structurizr](https://structurizr.com/) or vice versa.
+I would like to bind the **build** phase to the C4 model. It could parse the diagrams and know what Person/System/Component/Container is related to what and help with additional validation. Maybe even export to [structurizr](https://structurizr.com/) or vice versa.
 
 The project is still in it's early phase and I intend on using it on some actual projects in order to find more use cases and fix bugs.
 

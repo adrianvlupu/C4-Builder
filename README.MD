@@ -204,6 +204,10 @@ By default this is disabled. If enabled, the output will no longer include the a
 
 The current entity structure is inserted after the header
 
+### Custom pdf
+
+If defined, this css is used in the generation of the pdf files. It is useful for changing the font size `body{font-size:26px;}` on devices with high resolution screens.
+
 # Limitations
 
 - The current version does not support source and destination folders deeper than one level.
@@ -212,32 +216,6 @@ The current entity structure is inserted after the header
 
 # Future plans
 
-- I intend on making the cli tool overcome the two limitations mentioned.
-
-- Adding more options like --pdf for quicker export and not having to configure anything. 
-
-- A caching mechanism for local image generation.
-
-- Create a better project template
-
-Most importantly I would like to bind the **build** phase to the C4 model. It could parse the diagrams and know what Person/System/Component/Container is related to what and help with additional validation. Maybe even export to [structurizr](https://structurizr.com/) or vice versa.
+I would like to bind the **build** phase to the C4 model. It could parse the diagrams and know what Person/System/Component/Container is related to what and help with additional validation. Maybe even export to [structurizr](https://structurizr.com/) or vice versa.
 
 The project is still in it's early phase and I intend on using it on some actual projects in order to find more use cases and fix bugs.
-
-# Motivation
-
-I like to understand how systems work more than learning to write `if`, `var`, `for` in 10 languages.
-
-I have been trying to find an easier way to structure documentation regarding software design decisions for quite a while. Mostly for my own personal sanity. After maintaining numerous projects for more than a couple of years I started forgetting what decision led to the giant mess I'm looking at in the present.
-
-After using drawing tools and wasting more time on actually arranging the items rather than defining what the system does I started looking for alternatives. I then discovered [PlantUml](http://plantuml.com/). **I love this tool**. It allows you to write plain text and not worry about how the items are arranged. It enables really fast editing. I even managed to create them real-time in meetings white talking.
-
-Creating these diagrams and combining them with markdown led to major improvements. I started to spread out folders and files across multiple repositories. Some were bundled with the actual project. Some had a separate repository. I couldn't take the time to modify all instances of the files and it got really messy fast.
-
-After bumping into the [C4Model](https://c4model.com/) I realized more people have this problem and while collaborating with different developers we should all work using the same abstractions. Scrolling down I found this great repository [C4-PlantUML](https://github.com/RicardoNiepel/C4-PlantUML). 
-
-I started writing all my docs using this model but the structure varied and while sharing different pieces of documentation with more developers I found out not everyone is willing to do a basic install of plantuml and contribute. Some just want a basic overview and directions on what they need to do. I started exporting pdf's that soon got out of sync with the actual documentation. Started writing over those pdfs. When I remembered to make changes to the actual documentation repository the fact that each one followed a different pattern started to annoy me.
-
-I created this simple "bundler" so that all documentation projects look the same. The same folder structure and the same output.
-
-Although this set of tools provide enough value on their own, I got tired of online markdown editors not supporting plantuml. Or re-generating the diagrams as an image to export them to pdf. Adding links between files that always broke. I tried focusing more on the actual system being built.

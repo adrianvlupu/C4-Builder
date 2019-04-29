@@ -56,6 +56,7 @@ module.exports = async () => {
     let includeBreadcrumbs = conf.get('includeBreadcrumbs');
     let webTheme = conf.get('webTheme');
     let repoUrl = conf.get('repoUrl');
+    let pdfCss = conf.get('pdfCss');
 
     let hasRun = conf.get('hasRun');
 
@@ -89,8 +90,11 @@ module.exports = async () => {
         console.log(`Generate a single complete markdown file: ${generateCompleteMD !== undefined ? chalk.green(generateCompleteMD) : chalk.red('not set')}`)
         console.log(`Generate multiple pdf files: ${generatePDF !== undefined ? chalk.green(generatePDF) : chalk.red('not set')}`);
         console.log(`Generate a single complete pdf file: ${generateCompletePDF !== undefined ? chalk.green(generateCompletePDF) : chalk.red('not set')}`);
+        if (generatePDF || generateCompletePDF)
+            console.log(`Custom pdf css: ${pdfCss ? chalk.green(pdfCss) : chalk.red('not set')}`);
         console.log(`Generate website: ${generateWEB !== undefined ? chalk.green(generateWEB) : chalk.red('not set')}`);
-        console.log(`Website docsify theme: ${webTheme ? chalk.green(webTheme) : chalk.red('not set')}`);
+        if (generateWEB)
+            console.log(`  Website docsify theme: ${webTheme ? chalk.green(webTheme) : chalk.red('not set')}`);
         console.log(`Repository Url: ${repoUrl ? chalk.green(repoUrl) : chalk.red('not set')}`);
 
         console.log(`Include breadcrumbs: ${includeBreadcrumbs !== undefined ? chalk.green(includeBreadcrumbs) : chalk.red('not set')}`);
@@ -182,8 +186,6 @@ module.exports = async () => {
         conf.set('distFolder', responses.distFolder);
     }
 
-
-
     if (generateMD === undefined || generateCompleteMD === undefined ||
         generatePDF === undefined || generateCompletePDF === undefined ||
         generateWEB === undefined || program.config) {
@@ -259,6 +261,16 @@ module.exports = async () => {
                 default: repoUrl
             });
             conf.set('repoUrl', webOptions.repoUrl);
+        }
+
+        if (!!responses.generate.find(x => x === 'generatePDF' || x === 'generateCompletePDF')) {
+            let pdfOptions = await inquirer.prompt({
+                type: 'input',
+                name: 'pdfCss',
+                message: 'Add a custom css for the pdf?',
+                default: pdfCss
+            });
+            conf.set('pdfCss', pdfOptions.pdfCss);
         }
     }
     if (generateLocalImages === undefined ||

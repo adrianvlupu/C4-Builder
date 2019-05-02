@@ -1,20 +1,15 @@
 const figlet = require('figlet');
 const inquirer = require('inquirer');
 const joi = require('joi');
-const program = require('commander');
-const package = require('./package.json');
 const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 const fsextra = require('fs-extra');
 
-const help = require('./help');
-
 const {
     readFile,
     writeFile,
     makeDirectory,
-    clearConsole
 } = require('./utils.js');
 
 const validate = (schema) => answers => {
@@ -22,6 +17,8 @@ const validate = (schema) => answers => {
 };
 
 module.exports = async () => {
+    console.log('\nThis will create a new folder with the name of the project');
+
     let responses;
 
     responses = await inquirer.prompt({

@@ -565,8 +565,6 @@ const build = async () => {
     console.log(chalk.green(`built in ${(new Date() - start_date) / 1000} seconds`));
     if (GENERATE_WEBSITE) {
         console.log(chalk.gray('\nto view the generated website run'));
-        console.log(`> docsify serve ${DIST_FOLDER}`);
-        console.log('or');
         console.log(`> c4builder site`);
     }
 };

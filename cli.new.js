@@ -42,24 +42,38 @@ module.exports = async () => {
             return false;
         }
     });
+    let projectName = responses.projectName;
 
-    await makeDirectory(responses.projectName);
+    // responses = await inquirer.prompt({
+    //     type: 'list',
+    //     name: 'template',
+    //     message: 'Project template:',
+    //     default: 'template',
+    //     choices: [{
+    //         name: 'Basic project from template',
+    //         value: 'template'
+    //     }, {
+    //         name: 'Blank',
+    //         value: 'blank'
+    //     }]
+    // });
+    // let template = responses.template;
+
+    await makeDirectory(projectName);
 
     //default project readme
+    await fsextra.copy(path.join(__dirname, 'template'), path.join(process.cwd(), projectName));
+
     let readme = await readFile(path.join(__dirname, 'template', 'readme.md'));
-    await writeFile(path.join(process.cwd(), responses.projectName, 'README.MD'),
-        `# ${responses.projectName}\n\n${readme}`
+    await writeFile(path.join(process.cwd(), projectName, 'README.MD'),
+        `# ${projectName}\n\n${readme}`
     );
-    await writeFile(path.join(process.cwd(), responses.projectName, '.gitignore'),
-        `*.pdf`
-    );
-    await fsextra.copy(path.join(__dirname, 'template', 'src'), path.join(process.cwd(), responses.projectName, 'src'));
 
     console.log(chalk.green(`the project was created`));
     console.log(chalk.gray(`run the following commands`));
-    console.log(`> cd ${responses.projectName}`);
+    console.log(`> cd ${projectName}`);
     console.log(`> c4builder`);
     console.log(chalk.gray(`the wizard will guide you through the rest of the configuration`));
-    console.log(chalk.gray(`check out the ./${responses.projectName}/docs folder created`));
+    console.log(chalk.gray(`check out the ./${projectName}/docs folder created`));
     return;
 };

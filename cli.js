@@ -27,6 +27,7 @@ module.exports = async () => {
         .option('reset', 'clear all configuration')
         .option('site', 'serve the generated site')
         .option('docs', 'a brief explanation for the available configuration options')
+        .option('-p, --port <n>', 'port used for serving the generated site', parseInt)
         .parse(process.argv);
 
     let conf = { get: () => { } };
@@ -52,6 +53,7 @@ module.exports = async () => {
         includeLinkToDiagram: conf.get('includeLinkToDiagram'),
         includeBreadcrumbs: conf.get('includeBreadcrumbs'),
         webTheme: conf.get('webTheme'),
+        webPort: conf.get('webPort'),
         repoUrl: conf.get('repoUrl'),
         pdfCss: conf.get('pdfCss'),
         hasRun: conf.get('hasRun')
@@ -74,7 +76,7 @@ module.exports = async () => {
         return cmdList(currentConfiguration);
 
     if (program.site)
-        return cmdSite(currentConfiguration);
+        return cmdSite(currentConfiguration, program);
 
     if (program.reset) {
         conf.clear();

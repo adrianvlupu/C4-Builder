@@ -147,6 +147,14 @@ module.exports = async (currentConfiguration, conf, program) => {
                 default: currentConfiguration.repoUrl
             });
             conf.set('repoUrl', webOptions.repoUrl);
+
+            webOptions = await inquirer.prompt({
+                type: 'input',
+                name: 'webPort',
+                message: 'Change the default serve port?',
+                default: currentConfiguration.webPort || '3000'
+            });
+            conf.set('webPort', webOptions.webPort);
         }
 
         if (!!responses.generate.find(x => x === 'generatePDF' || x === 'generateCompletePDF')) {

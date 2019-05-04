@@ -3,8 +3,6 @@
 
 LAYOUT_WITH_LEGEND
 
-title Component diagram for Web Application
-
 Container(api, "API Application", "java and Spring MVC", "Delivers the static content and the internet banking single page application.")
 
 Container_Boundary(spa, "Single Page Application") {

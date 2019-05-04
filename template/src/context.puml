@@ -1,9 +1,7 @@
 @startuml
-!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Context.puml
 
 LAYOUT_WITH_LEGEND
-
-title System Context diagram for Internet Banking System
 
 Person(pbc, "Personal Banking Customer", "A customer of the bank, with personal bank accounts.")
 System(ibs, "Internet Banking System", "Allows customers to view information about their bank accounts, and make payments.")

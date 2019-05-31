@@ -219,3 +219,15 @@ If defined, this css is used in the generation of the pdf files. It is useful fo
 I would like to bind the **build** phase to the C4 model. It could parse the diagrams and know what Person/System/Component/Container is related to what and help with additional validation. Maybe even export to [structurizr](https://structurizr.com/) or vice versa.
 
 The project is still in it's early phase and I intend on using it on some actual projects in order to find more use cases and fix bugs.
+
+# Change log
+
+## v0.1.5
+
+PlantUML recently switched to V1.2019.6 adding some breaking changes to `!define` and `!definelong`. You can still use them but when calling you have to add `()` method call (http://plantuml.com/preprocessing)
+
+Considering they updated their server to use the new version, diagrams generated locally that display correctly won't work on the plantuml server and viceversa
+
+Until the underlying `node-plantuml` package gets updated, I changed the dependency to the fork at https://github.com/adrianvlupu/node-plantuml.git
+
+Also the `!include` directives on each template diagram point to the 1.2019.6 compatible version hosted at https://github.com/adrianvlupu/C4-PlantUML.

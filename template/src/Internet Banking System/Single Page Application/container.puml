@@ -1,7 +1,7 @@
 @startuml
-!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+!include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/master/C4_Component.puml
 
-LAYOUT_WITH_LEGEND
+LAYOUT_WITH_LEGEND()
 
 Container(api, "API Application", "java and Spring MVC", "Delivers the static content and the internet banking single page application.")
 

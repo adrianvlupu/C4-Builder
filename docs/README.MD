@@ -32,8 +32,6 @@ I strongly encourage people to check them out first but if you want to dive righ
 
 The easiest way to get started is with the *new project* template.
 
-![new](images/new.gif)
-
 ```bash
 c4builder new
 cd project
@@ -105,8 +103,6 @@ c4builder comes with a wizard for managing configuration for each project folder
 
 ![wizard](images/build.gif)
 
-> NOTE
->
 > Files starting with _ will be ignored during the build process
 
 ## The output
@@ -220,9 +216,19 @@ I would like to bind the **build** phase to the C4 model. It could parse the dia
 
 The project is still in it's early phase and I intend on using it on some actual projects in order to find more use cases and fix bugs.
 
-# Motivation
+# Change log
 
-I like to understand how systems work more than learning to write `if`, `var`, `for` in 10 languages.
+## v0.1.5
+
+PlantUML recently switched to V1.2019.6 adding some breaking changes to `!define` and `!definelong`. You can still use them but when calling you have to add `()` method call (http://plantuml.com/preprocessing)
+
+Considering they updated their server to use the new version, diagrams generated locally that display correctly won't work on the plantuml server and viceversa
+
+Until the underlying `node-plantuml` package gets updated, I changed the dependency to the fork at https://github.com/adrianvlupu/node-plantuml.git
+
+Also the `!include` directives on each template diagram point to the 1.2019.6 compatible version hosted at https://github.com/adrianvlupu/C4-PlantUML.
+
+# Motivation
 
 I have been trying to find an easier way to structure documentation regarding software design decisions for quite a while. Mostly for my own personal sanity. After maintaining numerous projects for more than a couple of years I started forgetting what decision led to the giant mess I'm looking at in the present.
 

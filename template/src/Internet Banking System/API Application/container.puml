@@ -1,7 +1,7 @@
 @startuml
-!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+!include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/master/C4_Component.puml
 
-LAYOUT_WITH_LEGEND
+LAYOUT_WITH_LEGEND()
 
 Container(spa, "Single Page Application", "javascript and react", "Provides all the internet banking functionality to customers via their web browser.")
 Container(ma, "Mobile App", "Xamarin", "Provides a limited subset ot the internet banking functionality to customers via their mobile mobile device.")

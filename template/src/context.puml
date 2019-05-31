@@ -1,7 +1,7 @@
 @startuml
-!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Context.puml
+!include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/master/C4_Context.puml
 
-LAYOUT_WITH_LEGEND
+LAYOUT_WITH_LEGEND()
 
 Person(pbc, "Personal Banking Customer", "A customer of the bank, with personal bank accounts.")
 System(ibs, "Internet Banking System", "Allows customers to view information about their bank accounts, and make payments.")

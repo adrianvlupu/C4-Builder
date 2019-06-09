@@ -222,6 +222,10 @@ The project is still in it's early phase and I intend on using it on some actual
 
 # Change log
 
+## v0.1.7
+
+Changed template to include the latest C4-PlantUML`!include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/latest/...`
+
 ## v0.1.6
 
 Switched from http-server module to express for serving the static site.

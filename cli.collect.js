@@ -172,7 +172,8 @@ module.exports = async (currentConfiguration, conf, program) => {
         let defaults = [
             currentConfiguration.includeBreadcrumbs === undefined ? 'includeBreadcrumbs' : currentConfiguration.includeBreadcrumbs ? 'includeBreadcrumbs' : null,
             currentConfiguration.generateLocalImages === undefined ? null : currentConfiguration.generateLocalImages ? 'generateLocalImages' : null,
-            currentConfiguration.includeLinkToDiagram === undefined ? null : currentConfiguration.includeLinkToDiagram ? 'includeLinkToDiagram' : null
+            currentConfiguration.includeLinkToDiagram === undefined ? null : currentConfiguration.includeLinkToDiagram ? 'includeLinkToDiagram' : null,
+            currentConfiguration.diagramsOnTop === undefined ? null : currentConfiguration.diagramsOnTop ? 'diagramsOnTop' : null
         ];
         responses = await inquirer.prompt({
             type: 'checkbox',
@@ -188,10 +189,14 @@ module.exports = async (currentConfiguration, conf, program) => {
             }, {
                 name: 'Replace diagrams with a link',
                 value: 'includeLinkToDiagram'
+            }, {
+                name: 'Place diagrams before text',
+                value: 'diagramsOnTop'
             }]
         });
         conf.set('includeBreadcrumbs', !!responses.generate.find(x => x === 'includeBreadcrumbs'));
         conf.set('generateLocalImages', !!responses.generate.find(x => x === 'generateLocalImages'));
         conf.set('includeLinkToDiagram', !!responses.generate.find(x => x === 'includeLinkToDiagram'));
+        conf.set('diagramsOnTop', !!responses.generate.find(x => x === 'diagramsOnTop'));
     }
 };

@@ -56,6 +56,7 @@ module.exports = async () => {
         webPort: conf.get('webPort'),
         repoUrl: conf.get('repoUrl'),
         pdfCss: conf.get('pdfCss'),
+        diagramsOnTop: conf.get('diagramsOnTop'),
         hasRun: conf.get('hasRun')
     }
 
@@ -76,7 +77,7 @@ module.exports = async () => {
         return cmdList(currentConfiguration);
 
     if (program.site)
-        return cmdSite(currentConfiguration, program);
+        return await cmdSite(currentConfiguration, program);
 
     if (program.reset) {
         conf.clear();

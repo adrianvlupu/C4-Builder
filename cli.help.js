@@ -19,7 +19,7 @@ The folder that will hold the final documentation.
 This folder will get erased on each build so don't include any other files.
 ${chalk.cyan('Generate multiple markdown files')}
 It will merge all the markdown and plantuml files from a folder into a single file.
-The file will contain all the content from the markdown files and attach the diagram images at the bottom.
+The file will contain all the content from the markdown files and attach the diagram images.
 The directory structure from the destination folder will be the same as the root folder.
     ${chalk.cyan('Include basic navigation')}
     It includes markdown links at the top of each file. It enables a drill-down style navigation.
@@ -40,8 +40,10 @@ Uses docsify to generate a website with a sidebar for navigation. The site can b
 ${chalk.cyan('Generate diagram images locally')}
 Uses the localy installed plantuml package to build svg images for each diagram.
 ${chalk.cyan('Replace diagrams with a link')}
-Replaces the diagram images at the bottom of the files with links.
+Replaces the diagram images with links.
 ${chalk.cyan('Include breadcrumbs')}
-Shows the original folder hierarchy after each title
+Shows the original folder hierarchy after each title.
+${chalk.cyan('Place diagrams before text')}
+Choose to place diagrams before or after the text.
     `);
 };

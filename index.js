@@ -39,6 +39,7 @@ let INCLUDE_BREADCRUMBS = true; //applies to GENERATE_MD, GENERATE_COMPLETE_MD_F
 let INCLUDE_TABLE_OF_CONTENTS = true; //applies to GENERATE_MD
 let INCLUDE_LINK_TO_DIAGRAM = false; //applies to all
 let PDF_CSS = path.join(__dirname, 'pdf.css');
+let DIAGRAMS_ON_TOP = true;
 
 let DIAGRAM_FORMAT = 'svg'; //applies to all
 
@@ -166,28 +167,40 @@ const generateCompleteMD = async (tree) => {
         }
 
         //concatenate markdown files
-        for (const mdFile of item.mdFiles) {
-            MD += '\n\n';
-            MD += mdFile;
-        }
+        const appendText = () => {
+            for (const mdFile of item.mdFiles) {
+                MD += '\n\n';
+                MD += mdFile;
+            }
+        };
         //add diagrams
-        for (const pumlFile of item.pumlFiles) {
-            MD += '\n\n';
-            let diagramUrl = encodeURIPath(path.join(
-                '.',
-                item.dir.replace(ROOT_FOLDER, ''),
-                path.parse(pumlFile.dir).name + `.${DIAGRAM_FORMAT}`
-            ));
-            if (!GENERATE_LOCAL_IMAGES)
-                diagramUrl = plantUmlServerUrl(pumlFile.content);
+        const appendImages = () => {
+            for (const pumlFile of item.pumlFiles) {
+                MD += '\n\n';
+                let diagramUrl = encodeURIPath(path.join(
+                    '.',
+                    item.dir.replace(ROOT_FOLDER, ''),
+                    path.parse(pumlFile.dir).name + `.${DIAGRAM_FORMAT}`
+                ));
+                if (!GENERATE_LOCAL_IMAGES)
+                    diagramUrl = plantUmlServerUrl(pumlFile.content);
 
-            let diagramImage = `![diagram](${diagramUrl})`;
-            let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
+                let diagramImage = `![diagram](${diagramUrl})`;
+                let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
 
-            if (!INCLUDE_LINK_TO_DIAGRAM) //img
-                MD += diagramImage;
-            else //link
-                MD += diagramLink;
+                if (!INCLUDE_LINK_TO_DIAGRAM) //img
+                    MD += diagramImage;
+                else //link
+                    MD += diagramLink;
+            }
+        };
+
+        if (DIAGRAMS_ON_TOP) {
+            appendImages();
+            appendText();
+        } else {
+            appendText();
+            appendImages();
         }
     }
 
@@ -221,24 +234,36 @@ const generateCompletePDF = async (tree) => {
         }
 
         //concatenate markdown files
-        for (const mdFile of item.mdFiles) {
-            MD += '\n\n';
-            MD += mdFile;
-        }
+        const appendText = () => {
+            for (const mdFile of item.mdFiles) {
+                MD += '\n\n';
+                MD += mdFile;
+            }
+        };
         //add diagrams
-        for (const pumlFile of item.pumlFiles) {
-            MD += '\n\n';
-            let diagramUrl = encodeURIPath(path.join(
-                DIST_FOLDER,
-                item.dir.replace(ROOT_FOLDER, ''),
-                path.parse(pumlFile.dir).name + `.${DIAGRAM_FORMAT}`
-            ));
-            if (!GENERATE_LOCAL_IMAGES)
-                diagramUrl = plantUmlServerUrl(pumlFile.content);
+        const appendImages = () => {
+            for (const pumlFile of item.pumlFiles) {
+                MD += '\n\n';
+                let diagramUrl = encodeURIPath(path.join(
+                    DIST_FOLDER,
+                    item.dir.replace(ROOT_FOLDER, ''),
+                    path.parse(pumlFile.dir).name + `.${DIAGRAM_FORMAT}`
+                ));
+                if (!GENERATE_LOCAL_IMAGES)
+                    diagramUrl = plantUmlServerUrl(pumlFile.content);
 
-            let diagramImage = `![diagram](${diagramUrl})`;
+                let diagramImage = `![diagram](${diagramUrl})`;
 
-            MD += diagramImage;
+                MD += diagramImage;
+            }
+        };
+
+        if (DIAGRAMS_ON_TOP) {
+            appendImages();
+            appendText();
+        } else {
+            appendText();
+            appendImages();
         }
     }
 
@@ -325,28 +350,39 @@ const generateMD = async (tree, onProgress) => {
             MD += `\n\n---`;
 
         //concatenate markdown files
-        for (const mdFile of item.mdFiles) {
-            MD += '\n\n';
-            MD += mdFile;
-        }
-
+        const appendText = () => {
+            for (const mdFile of item.mdFiles) {
+                MD += '\n\n';
+                MD += mdFile;
+            }
+        };
         //add diagrams
-        for (const pumlFile of item.pumlFiles) {
-            MD += '\n\n';
-            let diagramUrl = encodeURIPath(path.join(
-                path.dirname(pumlFile.dir),
-                path.parse(pumlFile.dir).name + `.${DIAGRAM_FORMAT}`
-            ));
-            if (!GENERATE_LOCAL_IMAGES)
-                diagramUrl = plantUmlServerUrl(pumlFile.content);
+        const appendImages = () => {
+            for (const pumlFile of item.pumlFiles) {
+                MD += '\n\n';
+                let diagramUrl = encodeURIPath(path.join(
+                    path.dirname(pumlFile.dir),
+                    path.parse(pumlFile.dir).name + `.${DIAGRAM_FORMAT}`
+                ));
+                if (!GENERATE_LOCAL_IMAGES)
+                    diagramUrl = plantUmlServerUrl(pumlFile.content);
 
-            let diagramImage = `![diagram](${diagramUrl})`;
-            let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
+                let diagramImage = `![diagram](${diagramUrl})`;
+                let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
 
-            if (!INCLUDE_LINK_TO_DIAGRAM) //img
-                MD += diagramImage;
-            else //link
-                MD += diagramLink;
+                if (!INCLUDE_LINK_TO_DIAGRAM) //img
+                    MD += diagramImage;
+                else //link
+                    MD += diagramLink;
+            }
+        };
+
+        if (DIAGRAMS_ON_TOP) {
+            appendImages();
+            appendText();
+        } else {
+            appendText();
+            appendImages();
         }
 
         //write to disk
@@ -378,25 +414,36 @@ const generatePDF = async (tree, onProgress) => {
             MD += `\n\n\`${item.dir.replace(ROOT_FOLDER, '')}\``;
 
         //concatenate markdown files
-        for (const mdFile of item.mdFiles) {
-            MD += '\n\n';
-            MD += mdFile;
-        }
-
+        const appendText = () => {
+            for (const mdFile of item.mdFiles) {
+                MD += '\n\n';
+                MD += mdFile;
+            }
+        };
         //add diagrams
-        for (const pumlFile of item.pumlFiles) {
-            MD += '\n\n';
-            let diagramUrl = encodeURIPath(path.join(
-                DIST_FOLDER,
-                item.dir.replace(ROOT_FOLDER, ''),
-                path.parse(pumlFile.dir).name + `.${DIAGRAM_FORMAT}`
-            ));
-            if (!GENERATE_LOCAL_IMAGES)
-                diagramUrl = `https://www.plantuml.com/plantuml/png/0/${urlTextFrom(pumlFile.content)}`;
+        const appendImages = () => {
+            for (const pumlFile of item.pumlFiles) {
+                MD += '\n\n';
+                let diagramUrl = encodeURIPath(path.join(
+                    DIST_FOLDER,
+                    item.dir.replace(ROOT_FOLDER, ''),
+                    path.parse(pumlFile.dir).name + `.${DIAGRAM_FORMAT}`
+                ));
+                if (!GENERATE_LOCAL_IMAGES)
+                    diagramUrl = `https://www.plantuml.com/plantuml/png/0/${urlTextFrom(pumlFile.content)}`;
 
-            let diagramImage = `![diagram](${diagramUrl})`;
+                let diagramImage = `![diagram](${diagramUrl})`;
 
-            MD += diagramImage;
+                MD += diagramImage;
+            }
+        };
+
+        if (DIAGRAMS_ON_TOP) {
+            appendImages();
+            appendText();
+        } else {
+            appendText();
+            appendImages();
         }
 
         totalCount++;
@@ -452,30 +499,42 @@ const generateWebMD = async (tree) => {
         let MD = `# ${name}`;
 
         //concatenate markdown files
-        for (const mdFile of item.mdFiles) {
-            MD += '\n\n';
-            MD += mdFile;
-        }
+        const appendText = () => {
+            for (const mdFile of item.mdFiles) {
+                MD += '\n\n';
+                MD += mdFile;
+            }
+        };
         //add diagrams
-        for (const pumlFile of item.pumlFiles) {
-            MD += '\n\n';
+        const appendImages = () => {
+            for (const pumlFile of item.pumlFiles) {
+                MD += '\n\n';
 
-            let diagramUrl = encodeURIPath(path.join(
-                path.dirname(pumlFile.dir),
-                path.parse(pumlFile.dir).name + `.${DIAGRAM_FORMAT}`
-            ));
-            if (!GENERATE_LOCAL_IMAGES)
-                diagramUrl = plantUmlServerUrl(pumlFile.content);
+                let diagramUrl = encodeURIPath(path.join(
+                    path.dirname(pumlFile.dir),
+                    path.parse(pumlFile.dir).name + `.${DIAGRAM_FORMAT}`
+                ));
+                if (!GENERATE_LOCAL_IMAGES)
+                    diagramUrl = plantUmlServerUrl(pumlFile.content);
 
-            let diagramImage = `![diagram](${diagramUrl})`;
-            let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
+                let diagramImage = `![diagram](${diagramUrl})`;
+                let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
 
-            if (!INCLUDE_LINK_TO_DIAGRAM) //img
-                MD += diagramImage;
-            else if (INCLUDE_LINK_TO_DIAGRAM && GENERATE_LOCAL_IMAGES)
-                MD += diagramImage;
-            else //link
-                MD += diagramLink;
+                if (!INCLUDE_LINK_TO_DIAGRAM) //img
+                    MD += diagramImage;
+                else if (INCLUDE_LINK_TO_DIAGRAM && GENERATE_LOCAL_IMAGES)
+                    MD += diagramImage;
+                else //link
+                    MD += diagramLink;
+            }
+        };
+
+        if (DIAGRAMS_ON_TOP) {
+            appendImages();
+            appendText();
+        } else {
+            appendText();
+            appendImages();
         }
 
         //write to disk
@@ -592,6 +651,7 @@ const build = async () => {
     WEB_THEME = conf.get('webTheme');
     REPO_NAME = conf.get('repoUrl');
     PDF_CSS = conf.get('pdfCss') || PDF_CSS;
+    DIAGRAMS_ON_TOP = conf.get('diagramsOnTop');
 
     await build();
 

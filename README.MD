@@ -113,7 +113,7 @@ c4builder comes with a wizard for managing configuration for each project folder
 
 Using the configuration wizard you can choose any combination of outputs. By default all are enabled.
 
-The output should have the same folder structure as the **source**. Each `.md` file inherits all the contents from the source `.md` files in that folder and appends either a link or the actual diagram images at the bottom of the file.
+The output should have the same folder structure as the **source**. Each `.md` file inherits all the contents from the source `.md` files in that folder and appends either a link or the actual diagram images at the bottom/top of the file.
 
 ```bash
 │   .gitignore
@@ -221,6 +221,12 @@ I would like to bind the **build** phase to the C4 model. It could parse the dia
 The project is still in it's early phase and I intend on using it on some actual projects in order to find more use cases and fix bugs.
 
 # Change log
+
+## v0.1.6
+
+Switched from http-server module to express for serving the static site.
+
+Added the option to place diagrams before text.
 
 ## v0.1.5
 

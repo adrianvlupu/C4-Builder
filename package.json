@@ -15,7 +15,9 @@
     "type": "git",
     "url": "https://github.com/adrianvlupu/C4-Builder.git"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "mocha ./tests"
+  },
   "keywords": [
     "C4",
     "C4Model",
@@ -41,5 +43,8 @@
     "recursive-readdir": "^2.2.2",
     "rimraf": "^2.6.2",
     "zlib": "^1.0.5"
+  },
+  "devDependencies": {
+    "mocha": "^6.1.4"
   }
 }

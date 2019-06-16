@@ -38,7 +38,7 @@ global.INCLUDE_LINK_TO_DIAGRAM = false; //applies to all
 global.PDF_CSS = path.join(__dirname, 'pdf.css');
 global.DIAGRAMS_ON_TOP = true;
 
-global.SAME_FILES = true;
+global.SAME_FILES = false;
 
 global.DIAGRAM_FORMAT = 'svg'; //applies to all
 
@@ -582,8 +582,7 @@ const build = async () => {
     if (!SAME_FILES) {
         rimraf.sync(DIST_FOLDER);
         await makeDirectory(path.join(DIST_FOLDER));
-    } else
-        DIST_FOLDER = ROOT_FOLDER;
+    }
 
     //actual build
     console.log(chalk.green(`\nbuilding documentation in ./${DIST_FOLDER}`));

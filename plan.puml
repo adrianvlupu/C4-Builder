@@ -1,0 +1,27 @@
+@startmindmap
++ c4builder
+++ DIST_FOLDER
+++ ROOT_FOLDER
+++ GENERATE_LOCAL_IMAGES
++++ DIAGRAMS_ON_TOP
+
+++++ HOMEPAGE_NAME
++++++ INCLUDE_BREADCRUMBS
+++++++ MD_FILE_NAME
++++++++ INCLUDE_NAVIGATION
+++++++++ INCLUDE_TABLE_OF_CONTENTS
++++++++++ <&document> GENERATE_MD
+++++++ PDF_CSS
++++++++ <&document> GENERATE_PDF
+++++++ PROJECT_NAME
++++++++ <&document> GENERATE_COMPLETE_MD_FILE
++++++ PDF_CSS
+++++++ PROJECT_NAME
++++++++ <&document> GENERATE_COMPLETE_PDF_FILE
+
+++++ REPO_NAME
++++++ WEB_FILE_NAME
+++++++ WEB_THEME
++++++++ PROJECT_NAME
+++++++++ <&document> GENERATE_WEBSITE
+@endmindmap

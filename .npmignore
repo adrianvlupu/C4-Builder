@@ -1,2 +1,4 @@
 docs
 /.vscode
+template/docs/
+template/.c4builder

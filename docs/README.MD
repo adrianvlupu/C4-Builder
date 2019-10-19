@@ -218,6 +218,10 @@ The project is still in it's early phase and I intend on using it on some actual
 
 # Change log
 
+## v0.1.9
+
+Thanks to [howiefh](https://github.com/howiefh) for adding the [charset option](https://github.com/adrianvlupu/C4-Builder/pull/1).
+
 ## v0.1.8
 
 Updated template to include the new `Deployment Diagram` in C4-PlantUML and more info inside `readme.md`

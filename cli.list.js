@@ -28,6 +28,7 @@ Include breadcrumbs: ${currentConfiguration.includeBreadcrumbs !== undefined ? c
 Generate diagram images locally: ${currentConfiguration.generateLocalImages !== undefined ? chalk.green(currentConfiguration.generateLocalImages) : chalk.red('not set')}
 Replace diagrams with a link: ${currentConfiguration.includeLinkToDiagram !== undefined ? chalk.green(currentConfiguration.includeLinkToDiagram) : chalk.red('not set')}
 Place diagrams before text: ${currentConfiguration.diagramsOnTop !== undefined ? chalk.green(currentConfiguration.diagramsOnTop) : chalk.red('not set')}
+Charset: ${currentConfiguration.charset !== undefined ? chalk.green(currentConfiguration.charset) : chalk.red('not set')}
 `);
     return;
 };

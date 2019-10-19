@@ -199,4 +199,14 @@ module.exports = async (currentConfiguration, conf, program) => {
         conf.set('includeLinkToDiagram', !!responses.generate.find(x => x === 'includeLinkToDiagram'));
         conf.set('diagramsOnTop', !!responses.generate.find(x => x === 'diagramsOnTop'));
     }
+
+    if (!currentConfiguration.charset || program.config) {
+        responses = await inquirer.prompt({
+            type: 'input',
+            name: 'charset',
+            message: 'Change the default charset',
+            default: currentConfiguration.charset || 'UTF-8'
+        });
+        conf.set('charset', responses.charset);
+    }
 };

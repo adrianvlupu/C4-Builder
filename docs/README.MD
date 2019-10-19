@@ -218,6 +218,12 @@ The project is still in it's early phase and I intend on using it on some actual
 
 # Change log
 
+## v0.1.8
+
+Updated template to include the new `Deployment Diagram` in C4-PlantUML and more info inside `readme.md`
+
+`node-plantuml` accepted the pull request [#29](https://github.com/markushedvall/node-plantuml/pull/29) so I changed the dependency back to the original repository.
+
 ## v0.1.7
 
 Changed template to include the latest C4-PlantUML`!include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/latest/...`

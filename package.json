@@ -1,6 +1,6 @@
 {
   "name": "c4builder",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "A CLI tool designed to compile a folder structure of markdowns and plant uml files into a site, pdf, single file markdown or a collection of markdowns with links",
   "main": "index.js",
   "bin": {
@@ -37,7 +37,7 @@
     "inquirer": "^6.3.1",
     "joi": "^14.3.1",
     "markdown-pdf": "^9.0.0",
-    "node-plantuml": "github:adrianvlupu/node-plantuml#temp",
+    "node-plantuml": "^0.9.0",
     "recursive-readdir": "^2.2.2",
     "rimraf": "^2.6.2",
     "zlib": "^1.0.5"

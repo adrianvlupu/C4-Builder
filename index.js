@@ -40,6 +40,7 @@ let INCLUDE_TABLE_OF_CONTENTS = true; //applies to GENERATE_MD
 let INCLUDE_LINK_TO_DIAGRAM = false; //applies to all
 let PDF_CSS = path.join(__dirname, 'pdf.css');
 let DIAGRAMS_ON_TOP = true;
+let CHARSET = 'UTF-8';
 
 let DIAGRAM_FORMAT = 'svg'; //applies to all
 
@@ -128,7 +129,7 @@ const generateImages = async (tree, onImageGenerated) => {
                 )
             );
             plantuml
-                .generate(path.join(item.dir, pumlFile), { format: DIAGRAM_FORMAT })
+                .generate(path.join(item.dir, pumlFile), { format: DIAGRAM_FORMAT, charset: CHARSET })
                 .out
                 .pipe(stream);
             totalImages++;
@@ -652,6 +653,7 @@ const build = async () => {
     REPO_NAME = conf.get('repoUrl');
     PDF_CSS = conf.get('pdfCss') || PDF_CSS;
     DIAGRAMS_ON_TOP = conf.get('diagramsOnTop');
+    CHARSET = conf.get('charset');
 
     await build();
 

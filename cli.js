@@ -57,7 +57,8 @@ module.exports = async () => {
         repoUrl: conf.get('repoUrl'),
         pdfCss: conf.get('pdfCss'),
         diagramsOnTop: conf.get('diagramsOnTop'),
-        hasRun: conf.get('hasRun')
+        hasRun: conf.get('hasRun'),
+        charset: conf.get('charset')
     }
 
     if (program.new || program.config || !currentConfiguration.hasRun)

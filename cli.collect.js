@@ -77,9 +77,9 @@ module.exports = async (currentConfiguration, conf, program) => {
         currentConfiguration.generateWEB === undefined || program.config) {
 
         let defaults = [
-            currentConfiguration.generateMD === undefined ? 'generateMD' : currentConfiguration.generateMD ? 'generateMD' : null,
+            currentConfiguration.generateMD === undefined ? null : currentConfiguration.generateMD ? 'generateMD' : null,
             currentConfiguration.generatePDF === undefined ? 'generatePDF' : currentConfiguration.generatePDF ? 'generatePDF' : null,
-            currentConfiguration.generateCompleteMD === undefined ? 'generateCompleteMD' : currentConfiguration.generateCompleteMD ? 'generateCompleteMD' : null,
+            currentConfiguration.generateCompleteMD === undefined ? null : currentConfiguration.generateCompleteMD ? 'generateCompleteMD' : null,
             currentConfiguration.generateCompletePDF === undefined ? 'generateCompletePDF' : currentConfiguration.generateCompletePDF ? 'generateCompletePDF' : null,
             currentConfiguration.generateWEB === undefined ? 'generateWEB' : currentConfiguration.generateWEB ? 'generateWEB' : null
         ];

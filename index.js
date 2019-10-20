@@ -6,7 +6,8 @@ const fs = require('fs');
 const path = require('path');
 const fsextra = require('fs-extra');
 const docsifyTemplate = require('./docsify.template.js');
-const markdownpdf = require("markdown-pdf");
+const markdownpdf = require("md-to-pdf");
+const watch = require('node-watch');
 
 const cli = require('./cli');
 
@@ -246,7 +247,6 @@ const generateCompletePDF = async (tree) => {
             for (const pumlFile of item.pumlFiles) {
                 MD += '\n\n';
                 let diagramUrl = encodeURIPath(path.join(
-                    DIST_FOLDER,
                     item.dir.replace(ROOT_FOLDER, ''),
                     path.parse(pumlFile.dir).name + `.${DIAGRAM_FORMAT}`
                 ));
@@ -273,22 +273,36 @@ const generateCompletePDF = async (tree) => {
         DIST_FOLDER,
         `${PROJECT_NAME}_TEMP.md`
     ), MD);
-    let stream = fs.createWriteStream(path.join(
-        DIST_FOLDER,
-        `${PROJECT_NAME}.pdf`
-    ));
-    //pdf
-    fs.createReadStream(path.join(
-        DIST_FOLDER,
-        `${PROJECT_NAME}_TEMP.md`
-    )).pipe(markdownpdf({
-        paperFormat: 'A4',
-        cssPath: PDF_CSS
-    })).pipe(stream);
+    //convert to pdf
+    await markdownpdf(
+        path.join(
+            DIST_FOLDER,
+            `${PROJECT_NAME}_TEMP.md`
+        ), {
+        stylesheet: [PDF_CSS],
+        pdf_options: {
+            scale: 1,
+            displayHeaderFooter: false,
+            printBackground: true,
+            landscape: false,
+            pageRanges: '',
+            format: 'A4',
+            width: '',
+            height: '',
+            margin: {
+                top: '1.5cm',
+                right: '1cm',
+                bottom: '1cm',
+                left: '1cm'
+            }
+        },
+        dest: path.join(
+            DIST_FOLDER,
+            `${PROJECT_NAME}.pdf`
+        )
+    }).catch(console.error);
 
-    await new Promise(resolve => stream.on('finish', resolve));
-
-    //remove temp file
+    // remove temp file
     await fsextra.remove(path.join(
         DIST_FOLDER,
         `${PROJECT_NAME}_TEMP.md`
@@ -425,11 +439,7 @@ const generatePDF = async (tree, onProgress) => {
         const appendImages = () => {
             for (const pumlFile of item.pumlFiles) {
                 MD += '\n\n';
-                let diagramUrl = encodeURIPath(path.join(
-                    DIST_FOLDER,
-                    item.dir.replace(ROOT_FOLDER, ''),
-                    path.parse(pumlFile.dir).name + `.${DIAGRAM_FORMAT}`
-                ));
+                let diagramUrl = encodeURIPath(path.parse(pumlFile.dir).name + `.${DIAGRAM_FORMAT}`);
                 if (!GENERATE_LOCAL_IMAGES)
                     diagramUrl = `https://www.plantuml.com/plantuml/png/0/${urlTextFrom(pumlFile.content)}`;
 
@@ -454,22 +464,35 @@ const generatePDF = async (tree, onProgress) => {
             item.dir.replace(ROOT_FOLDER, ''),
             `${MD_FILE_NAME}_TEMP.md`
         ), MD).then(() => {
-            let stream = fs.createWriteStream(path.join(
-                DIST_FOLDER,
-                item.dir.replace(ROOT_FOLDER, ''),
-                `${MD_FILE_NAME}.pdf`
-            ));
-            //pdf
-            fs.createReadStream(path.join(
-                DIST_FOLDER,
-                item.dir.replace(ROOT_FOLDER, ''),
-                `${MD_FILE_NAME}_TEMP.md`
-            )).pipe(markdownpdf({
-                paperFormat: 'A4',
-                cssPath: PDF_CSS
-            })).pipe(stream);
-
-            return new Promise(resolve => stream.on('finish', resolve));
+            return markdownpdf(
+                path.join(
+                    DIST_FOLDER,
+                    item.dir.replace(ROOT_FOLDER, ''),
+                    `${MD_FILE_NAME}_TEMP.md`
+                ), {
+                stylesheet: [PDF_CSS],
+                pdf_options: {
+                    scale: 1,
+                    displayHeaderFooter: false,
+                    printBackground: true,
+                    landscape: false,
+                    pageRanges: '',
+                    format: 'A4',
+                    width: '',
+                    height: '',
+                    margin: {
+                        top: '1.5cm',
+                        right: '1cm',
+                        bottom: '1cm',
+                        left: '1cm'
+                    }
+                },
+                dest: path.join(
+                    DIST_FOLDER,
+                    item.dir.replace(ROOT_FOLDER, ''),
+                    `${name}.pdf`
+                )
+            }).catch(console.error);
         }).then(() => {
             //remove temp file
             fsextra.removeSync(path.join(
@@ -630,7 +653,7 @@ const build = async () => {
 };
 
 //main
-(async () => {
+(async function init() {
     let conf = await cli();
     if (!conf)
         return process.exit(0);

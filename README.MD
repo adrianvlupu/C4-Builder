@@ -222,6 +222,12 @@ The project is still in it's early phase and I intend on using it on some actual
 
 # Change log
 
+## v0.2.0
+
+Pdf generation now uses `puppeteer`. There are no more scaling issues for high resolution displays. Used the `css` file from [vscode-markdown-pdf](https://github.com/yzane/vscode-markdown-pdf.git).
+
+Removed unused dependencies.
+
 ## v0.1.9
 
 Thanks to [howiefh](https://github.com/howiefh) for adding the [charset option](https://github.com/adrianvlupu/C4-Builder/pull/1).

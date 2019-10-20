@@ -38,8 +38,6 @@
     "joi": "^14.3.1",
     "markdown-pdf": "^9.0.0",
     "node-plantuml": "^0.9.0",
-    "recursive-readdir": "^2.2.2",
-    "rimraf": "^2.6.2",
     "zlib": "^1.0.5"
   }
 }

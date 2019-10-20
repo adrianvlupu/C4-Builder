@@ -4,7 +4,7 @@ const plantuml = require('node-plantuml');
 const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
-const rimraf = require('rimraf');
+const fsextra = require('fs-extra');
 const docsifyTemplate = require('./docsify.template.js');
 const markdownpdf = require("markdown-pdf");
 
@@ -289,7 +289,7 @@ const generateCompletePDF = async (tree) => {
     await new Promise(resolve => stream.on('finish', resolve));
 
     //remove temp file
-    rimraf.sync(path.join(
+    await fsextra.remove(path.join(
         DIST_FOLDER,
         `${PROJECT_NAME}_TEMP.md`
     ));
@@ -472,7 +472,7 @@ const generatePDF = async (tree, onProgress) => {
             return new Promise(resolve => stream.on('finish', resolve));
         }).then(() => {
             //remove temp file
-            rimraf.sync(path.join(
+            fsextra.removeSync(path.join(
                 DIST_FOLDER,
                 item.dir.replace(ROOT_FOLDER, ''),
                 `${MD_FILE_NAME}_TEMP.md`
@@ -581,7 +581,7 @@ const build = async () => {
     let start_date = new Date();
 
     //clear dist directory
-    rimraf.sync(DIST_FOLDER);
+    await fsextra.emptyDir(DIST_FOLDER);
     await makeDirectory(path.join(DIST_FOLDER));
 
     //actual build

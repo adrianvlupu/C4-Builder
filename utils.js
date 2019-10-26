@@ -116,6 +116,8 @@ const urlTextFrom = (s) => {
     }
 };
 
+const plantUmlServerUrl = content => `https://www.plantuml.com/plantuml/svg/0/${urlTextFrom(content)}`;
+
 const clearConsole = () => {
     process.stdout.write('\x1b[2J');
     process.stdout.write('\x1b[0f');
@@ -126,7 +128,7 @@ module.exports = {
     readFile,
     writeFile,
     encodeURIPath,
-    urlTextFrom,
     writeOnSameLine,
-    clearConsole
+    clearConsole,
+    plantUmlServerUrl
 }

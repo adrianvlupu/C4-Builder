@@ -15,8 +15,11 @@ const cmdCollect = require('./cli.collect');
 const {
     clearConsole
 } = require('./utils.js');
+const updateNotifier = require('update-notifier');
 
 module.exports = async () => {
+    updateNotifier({ pkg: package }).notify();
+
     let responses;
 
     program

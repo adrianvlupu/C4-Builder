@@ -8,34 +8,34 @@ const validate = (schema) => answers => {
 };
 
 module.exports = async (currentConfiguration, conf, program) => {
-    if (!currentConfiguration.projectName || program.config) {
+    if (!currentConfiguration.PROJECT_NAME || program.config) {
         responses = await inquirer.prompt({
             type: 'input',
             name: 'projectName',
             message: 'Project Name',
-            default: currentConfiguration.projectName || path.parse(process.cwd()).name,
+            default: currentConfiguration.PROJECT_NAME || path.parse(process.cwd()).name,
             validate: validate(joi.string().trim().optional())
         });
         conf.set('projectName', responses.projectName);
     }
 
-    if (!currentConfiguration.homepageName || program.config) {
+    if (!currentConfiguration.HOMEPAGE_NAME || program.config) {
         responses = await inquirer.prompt({
             type: 'input',
             name: 'homepageName',
             message: 'HomePage Name',
-            default: currentConfiguration.homepageName || 'Overview',
+            default: currentConfiguration.HOMEPAGE_NAME || 'Overview',
             validate: validate(joi.string().trim().optional())
         });
         conf.set('homepageName', responses.homepageName);
     }
 
-    if (!currentConfiguration.rootFolder || program.config) {
+    if (!currentConfiguration.ROOT_FOLDER || program.config) {
         responses = await inquirer.prompt({
             type: 'input',
             name: 'rootFolder',
             message: 'Root documentation folder',
-            default: currentConfiguration.rootFolder || 'src',
+            default: currentConfiguration.ROOT_FOLDER || 'src',
             validate: answers => {
                 let isValid = validate(joi.string().trim().optional())(answers);
                 if (isValid) {
@@ -53,12 +53,12 @@ module.exports = async (currentConfiguration, conf, program) => {
         conf.set('rootFolder', responses.rootFolder);
     }
 
-    if (!currentConfiguration.distFolder || program.config) {
+    if (!currentConfiguration.DIST_FOLDER || program.config) {
         responses = await inquirer.prompt({
             type: 'input',
             name: 'distFolder',
             message: 'Destination folder',
-            default: currentConfiguration.distFolder || 'docs',
+            default: currentConfiguration.DIST_FOLDER || 'docs',
             validate: answers => {
                 let isValid = validate(joi.string().trim().optional());
                 if (isValid) {
@@ -72,16 +72,16 @@ module.exports = async (currentConfiguration, conf, program) => {
         conf.set('distFolder', responses.distFolder);
     }
 
-    if (currentConfiguration.generateMD === undefined || currentConfiguration.generateCompleteMD === undefined ||
-        currentConfiguration.generatePDF === undefined || currentConfiguration.generateCompletePDF === undefined ||
-        currentConfiguration.generateWEB === undefined || program.config) {
+    if (currentConfiguration.GENERATE_MD === undefined || currentConfiguration.GENERATE_COMPLETE_MD_FILE === undefined ||
+        currentConfiguration.GENERATE_PDF === undefined || currentConfiguration.GENERATE_COMPLETE_PDF_FILE === undefined ||
+        currentConfiguration.GENERATE_WEBSITE === undefined || program.config) {
 
         let defaults = [
-            currentConfiguration.generateMD === undefined ? null : currentConfiguration.generateMD ? 'generateMD' : null,
-            currentConfiguration.generatePDF === undefined ? 'generatePDF' : currentConfiguration.generatePDF ? 'generatePDF' : null,
-            currentConfiguration.generateCompleteMD === undefined ? null : currentConfiguration.generateCompleteMD ? 'generateCompleteMD' : null,
-            currentConfiguration.generateCompletePDF === undefined ? 'generateCompletePDF' : currentConfiguration.generateCompletePDF ? 'generateCompletePDF' : null,
-            currentConfiguration.generateWEB === undefined ? 'generateWEB' : currentConfiguration.generateWEB ? 'generateWEB' : null
+            currentConfiguration.GENERATE_MD === undefined ? null : currentConfiguration.GENERATE_MD ? 'generateMD' : null,
+            currentConfiguration.GENERATE_PDF === undefined ? 'generatePDF' : currentConfiguration.GENERATE_PDF ? 'generatePDF' : null,
+            currentConfiguration.GENERATE_COMPLETE_MD_FILE === undefined ? null : currentConfiguration.GENERATE_COMPLETE_MD_FILE ? 'generateCompleteMD' : null,
+            currentConfiguration.GENERATE_COMPLETE_PDF_FILE === undefined ? 'generateCompletePDF' : currentConfiguration.GENERATE_COMPLETE_PDF_FILE ? 'generateCompletePDF' : null,
+            currentConfiguration.GENERATE_WEBSITE === undefined ? 'generateWEB' : currentConfiguration.GENERATE_WEBSITE ? 'generateWEB' : null
         ];
 
         responses = await inquirer.prompt({
@@ -118,7 +118,7 @@ module.exports = async (currentConfiguration, conf, program) => {
                 type: 'confirm',
                 name: 'includeNavigation',
                 message: 'Include basic navigation?',
-                default: currentConfiguration.includeNavigation === undefined ? false : currentConfiguration.includeNavigation
+                default: currentConfiguration.INCLUDE_NAVIGATION === undefined ? false : currentConfiguration.INCLUDE_NAVIGATION
             });
             conf.set('includeNavigation', mdOptions.includeNavigation);
 
@@ -126,7 +126,7 @@ module.exports = async (currentConfiguration, conf, program) => {
                 type: 'confirm',
                 name: 'includeTableOfContents',
                 message: 'Include navigable table of contents?',
-                default: currentConfiguration.includeTableOfContents === undefined ? true : currentConfiguration.includeTableOfContents
+                default: currentConfiguration.INCLUDE_TABLE_OF_CONTENTS === undefined ? true : currentConfiguration.INCLUDE_TABLE_OF_CONTENTS
             });
             conf.set('includeTableOfContents', mdOptions.includeTableOfContents);
         }
@@ -136,7 +136,7 @@ module.exports = async (currentConfiguration, conf, program) => {
                 type: 'input',
                 name: 'webTheme',
                 message: 'Change the default docsify theme?',
-                default: currentConfiguration.webTheme || '//unpkg.com/docsify/lib/themes/vue.css'
+                default: currentConfiguration.WEB_THEME || '//unpkg.com/docsify/lib/themes/vue.css'
             });
             conf.set('webTheme', webOptions.webTheme);
 
@@ -144,7 +144,7 @@ module.exports = async (currentConfiguration, conf, program) => {
                 type: 'input',
                 name: 'repoUrl',
                 message: 'Include a repository url?',
-                default: currentConfiguration.repoUrl
+                default: currentConfiguration.REPO_NAME
             });
             conf.set('repoUrl', webOptions.repoUrl);
 
@@ -152,7 +152,7 @@ module.exports = async (currentConfiguration, conf, program) => {
                 type: 'input',
                 name: 'webPort',
                 message: 'Change the default serve port?',
-                default: currentConfiguration.webPort || '3000'
+                default: currentConfiguration.WEB_PORT || '3000'
             });
             conf.set('webPort', webOptions.webPort);
         }
@@ -162,18 +162,18 @@ module.exports = async (currentConfiguration, conf, program) => {
                 type: 'input',
                 name: 'pdfCss',
                 message: 'Add a custom css for the pdf (filename)?',
-                default: currentConfiguration.pdfCss
+                default: currentConfiguration.PDF_CSS
             });
             conf.set('pdfCss', pdfOptions.pdfCss);
         }
     }
-    if (currentConfiguration.generateLocalImages === undefined ||
-        currentConfiguration.includeBreadcrumbs === undefined || currentConfiguration.includeLinkToDiagram === undefined || program.config) {
+    if (currentConfiguration.GENERATE_LOCAL_IMAGES === undefined ||
+        currentConfiguration.INCLUDE_BREADCRUMBS === undefined || currentConfiguration.INCLUDE_LINK_TO_DIAGRAM === undefined || program.config) {
         let defaults = [
-            currentConfiguration.includeBreadcrumbs === undefined ? 'includeBreadcrumbs' : currentConfiguration.includeBreadcrumbs ? 'includeBreadcrumbs' : null,
-            currentConfiguration.generateLocalImages === undefined ? null : currentConfiguration.generateLocalImages ? 'generateLocalImages' : null,
-            currentConfiguration.includeLinkToDiagram === undefined ? null : currentConfiguration.includeLinkToDiagram ? 'includeLinkToDiagram' : null,
-            currentConfiguration.diagramsOnTop === undefined ? null : currentConfiguration.diagramsOnTop ? 'diagramsOnTop' : null
+            currentConfiguration.INCLUDE_BREADCRUMBS === undefined ? 'includeBreadcrumbs' : currentConfiguration.INCLUDE_BREADCRUMBS ? 'includeBreadcrumbs' : null,
+            currentConfiguration.GENERATE_LOCAL_IMAGES === undefined ? null : currentConfiguration.GENERATE_LOCAL_IMAGES ? 'generateLocalImages' : null,
+            currentConfiguration.INCLUDE_LINK_TO_DIAGRAM === undefined ? null : currentConfiguration.INCLUDE_LINK_TO_DIAGRAM ? 'includeLinkToDiagram' : null,
+            currentConfiguration.DIAGRAMS_ON_TOP === undefined ? null : currentConfiguration.DIAGRAMS_ON_TOP ? 'diagramsOnTop' : null
         ];
         responses = await inquirer.prompt({
             type: 'checkbox',
@@ -200,12 +200,12 @@ module.exports = async (currentConfiguration, conf, program) => {
         conf.set('diagramsOnTop', !!responses.generate.find(x => x === 'diagramsOnTop'));
     }
 
-    if (!currentConfiguration.charset || program.config) {
+    if (!currentConfiguration.CHARSET || program.config) {
         responses = await inquirer.prompt({
             type: 'input',
             name: 'charset',
             message: 'Change the default charset',
-            default: currentConfiguration.charset || 'UTF-8'
+            default: currentConfiguration.CHARSET || 'UTF-8'
         });
         conf.set('charset', responses.charset);
     }

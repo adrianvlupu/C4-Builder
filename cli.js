@@ -11,11 +11,42 @@ const cmdNewProject = require('./cli.new');
 const cmdList = require('./cli.list');
 const cmdSite = require('./cli.site');
 const cmdCollect = require('./cli.collect');
+const { build } = require('./build');
+const watch = require('node-watch');
 
 const {
     clearConsole
 } = require('./utils.js');
 const updateNotifier = require('update-notifier');
+
+const getOptions = conf => {
+    return {
+        GENERATE_MD: conf.get('generateMD'),
+        GENERATE_PDF: conf.get('generatePDF'),
+        GENERATE_WEBSITE: conf.get('generateWEB'),
+        GENERATE_COMPLETE_MD_FILE: conf.get('generateCompleteMD'),
+        GENERATE_COMPLETE_PDF_FILE: conf.get('generateCompletePDF'),
+        GENERATE_LOCAL_IMAGES: conf.get('generateLocalImages'),
+        ROOT_FOLDER: conf.get('rootFolder'),
+        DIST_FOLDER: conf.get('distFolder'),
+        PROJECT_NAME: conf.get('projectName'),
+        REPO_NAME: conf.get('repoUrl'),
+        HOMEPAGE_NAME: conf.get('homepageName'),
+        WEB_THEME: conf.get('webTheme'),
+        INCLUDE_NAVIGATION: conf.get('includeNavigation'),
+        INCLUDE_BREADCRUMBS: conf.get('includeBreadcrumbs'),
+        INCLUDE_TABLE_OF_CONTENTS: conf.get('includeTableOfContents'),
+        INCLUDE_LINK_TO_DIAGRAM: conf.get('includeLinkToDiagram'),
+        PDF_CSS: conf.get('pdfCss') || path.join(__dirname, 'pdf.css'),
+        DIAGRAMS_ON_TOP: conf.get('diagramsOnTop'),
+        CHARSET: conf.get('charset'),
+        WEB_PORT: conf.get('webPort'),
+        HAS_RUN: conf.get('hasRun'),
+        MD_FILE_NAME: 'README',
+        WEB_FILE_NAME: 'HOME',
+        DIAGRAM_FORMAT: 'svg'
+    }
+};
 
 module.exports = async () => {
     updateNotifier({ pkg: package }).notify();
@@ -29,6 +60,7 @@ module.exports = async () => {
         .option('list', 'display the current configuration')
         .option('reset', 'clear all configuration')
         .option('site', 'serve the generated site')
+        .option('-w, --watch', 'watch for changes')
         .option('docs', 'a brief explanation for the available configuration options')
         .option('-p, --port <n>', 'port used for serving the generated site', parseInt)
         .parse(process.argv);
@@ -40,37 +72,15 @@ module.exports = async () => {
     if (program.docs)
         return cmdHelp();
 
-    let currentConfiguration = {
-        rootFolder: conf.get('rootFolder'),
-        distFolder: conf.get('distFolder'),
-        projectName: conf.get('projectName'),
-        generateMD: conf.get('generateMD'),
-        includeNavigation: conf.get('includeNavigation'),
-        includeTableOfContents: conf.get('includeTableOfContents'),
-        generateCompleteMD: conf.get('generateCompleteMD'),
-        generatePDF: conf.get('generatePDF'),
-        generateCompletePDF: conf.get('generateCompletePDF'),
-        generateWEB: conf.get('generateWEB'),
-        homepageName: conf.get('homepageName'),
-        generateLocalImages: conf.get('generateLocalImages'),
-        includeLinkToDiagram: conf.get('includeLinkToDiagram'),
-        includeBreadcrumbs: conf.get('includeBreadcrumbs'),
-        webTheme: conf.get('webTheme'),
-        webPort: conf.get('webPort'),
-        repoUrl: conf.get('repoUrl'),
-        pdfCss: conf.get('pdfCss'),
-        diagramsOnTop: conf.get('diagramsOnTop'),
-        hasRun: conf.get('hasRun'),
-        charset: conf.get('charset')
-    }
+    let options = getOptions(conf);
 
-    if (program.new || program.config || !currentConfiguration.hasRun)
+    if (program.new || program.config || !options.HAS_RUN)
         clearConsole();
 
     console.log(chalk.blue(figlet.textSync('c4builder')));
     console.log(chalk.gray('Blow up your software documentation writing skills'));
 
-    if (!currentConfiguration.hasRun && !program.new) {
+    if (!options.HAS_RUN && !program.new) {
         console.log(`\nif you created the project using the 'c4model new' command you can just press enter and go with the default options to get a basic idea of how it works.\n`);
         console.log(`you can always change the configuration by running > c4builder config\n`);
     }
@@ -78,10 +88,7 @@ module.exports = async () => {
     if (program.new)
         return cmdNewProject();
     if (program.list)
-        return cmdList(currentConfiguration);
-
-    if (program.site)
-        return await cmdSite(currentConfiguration, program);
+        return cmdList(options);
 
     if (program.reset) {
         conf.clear();
@@ -89,11 +96,42 @@ module.exports = async () => {
         return;
     }
 
-    await cmdCollect(currentConfiguration, conf, program);
-
+    await cmdCollect(options, conf, program);
     if (!program.config) {
         conf.set('hasRun', true);
 
-        return conf;
+        let isBuilding = false;
+        let attemptedWatchBuild = false;
+        options = getOptions(conf);
+        if (program.watch || program.site) {
+            console.log(chalk.bold(chalk.yellow('\nWARNING:\nWatching for changes can take a long time if local image generation or pdf is enabled')));
+            watch(options.ROOT_FOLDER, { recursive: true }, async (evt, name) => {
+                console.log('%s changed.', name);
+                if (isBuilding) {
+                    attemptedWatchBuild = true;
+                    return console.log(chalk.gray('already building, will rebuild when finishing'));
+                }
+
+                isBuilding = true;
+                await build(options);
+                while (attemptedWatchBuild) {
+                    attemptedWatchBuild = false;
+                    await build(options);
+                }
+                isBuilding = false;
+            });
+        }
+
+        isBuilding = true;
+        await build(options);
+        isBuilding = false;
+
+        if (program.site)
+            return await cmdSite(options, program);
+
+        if (options.GENERATE_WEBSITE && !program.watch) {
+            console.log(chalk.gray('\nto view the generated website run'));
+            console.log(`> c4builder site`);
+        }
     }
 };

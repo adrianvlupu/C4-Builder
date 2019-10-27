@@ -22,15 +22,17 @@ It relies on these great projects :
 
 I strongly encourage people to check them out first but if you want to dive right in, the *new project* template should be easy to understand and edit.
 
-<!-- ![idea](images/idea.jpg) -->
+<!-- ![idea](docs/images/idea.jpg) -->
 
-![edit](images/edit.gif)
+![edit](docs/images/edit.gif)
 
 # Getting started
 
 `npm i -g c4builder`
 
 The easiest way to get started is with the *new project* template.
+
+![new](docs/images/new.gif)
 
 ```bash
 c4builder new
@@ -45,14 +47,16 @@ PS C:\docprojects\Online Banking> c4builder --help
 Usage: index [options]
 
 Options:
-  -V, --version  output the version number
-  new            create a new project from template
-  config         change configuration for the current directory
-  list           display the current configuration
-  reset          clear all configuration
-  site           serve the generated site
-  docs           a brief explanation for the available configuration options
-  -h, --help     output usage information
+  -V, --version   output the version number
+  new             create a new project from template
+  config          change configuration for the current directory
+  list            display the current configuration
+  reset           clear all configuration
+  site            serve the generated site
+  -w, --watch     watch for changes and rebuild
+  docs            a brief explanation for the available configuration options
+  -p, --port <n>  port used for serving the generated site
+  -h, --help      output usage information
 ```
 
 By default, running `c4builder` will attempt to build the project.
@@ -101,8 +105,10 @@ The basic navigation, table of contents, local generation of images and their in
 
 c4builder comes with a wizard for managing configuration for each project folder.
 
-![wizard](images/build.gif)
+![wizard](docs/images/build.gif)
 
+> NOTE
+>
 > Files starting with _ will be ignored during the build process
 
 ## The output
@@ -132,7 +138,7 @@ The output should have the same folder structure as the **source**. Each `.md` f
 
 The generated markdown files can be pushed to git and viewed directly as a readme.
 
-![mds](images/md.gif)
+![mds](docs/images/md.gif)
 
 #### Options:
 
@@ -140,13 +146,13 @@ The generated markdown files can be pushed to git and viewed directly as a readm
 
   The basic navigation comes in the form of a menu providing a link to the parent and descendants.
 
-  ![basicnav](images/simple-nav.jpg)
+  ![basicnav](docs/images/simple-nav.jpg)
 
 - table of contents (default)
 
   The table navigation always shows all entities and bolds the current one
   
-  ![tablenav](images/table-nav.jpg)
+  ![tablenav](docs/images/table-nav.jpg)
 
 ### Single markdown file
 
@@ -154,19 +160,19 @@ Outputs into a single file containing all entities. It includes a table of conte
 
 The generated markdown file makes for an easy single page readme for the repository.
 
-![singlemd](images/single-md.jpg)
+![singlemd](docs/images/single-md.jpg)
 
 ### Collection of pdf files each describing one entity
 
 A fast way to pass around information regarding only one particular System/Container/Component
 
-![pdf](images/pdf.jpg)
+![pdf](docs/images/pdf.jpg)
     
 ### Single pdf file with a table of contents
    
 The easiest format to share the full documentation
 
-![pdffull](images/full-pdf.jpg)
+![pdffull](docs/images/full-pdf.jpg)
 
 ### Docsify site with a sidebar
 
@@ -176,11 +182,11 @@ The site is minimalistic including only a sidebar with the System/Container/Comp
 
 The sidebar is generated manually so that it only contains the main entities defined in the project in a hierarchical way.
 
-![site](images/site.jpg)
+![site](docs/images/site.jpg)
 
 By going to the github repository settings and enabling GitHub pages the site be pushed with ease and provide an overview to all people involved in the project without having to worry about which version of pdf file got sent when.
 
-![github](images/githubpages.gif)
+![github](docs/images/githubpages.gif)
 
 ### Generate diagrams locally
 
@@ -217,6 +223,10 @@ I would like to bind the **build** phase to the C4 model. It could parse the dia
 The project is still in it's early phase and I intend on using it on some actual projects in order to find more use cases and fix bugs.
 
 # Change log
+
+## v0.2.1 + v0.2.2
+
+Added the `c4builder --watch` option and some refactoring.
 
 ## v0.2.0
 

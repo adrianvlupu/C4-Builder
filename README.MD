@@ -47,14 +47,16 @@ PS C:\docprojects\Online Banking> c4builder --help
 Usage: index [options]
 
 Options:
-  -V, --version  output the version number
-  new            create a new project from template
-  config         change configuration for the current directory
-  list           display the current configuration
-  reset          clear all configuration
-  site           serve the generated site
-  docs           a brief explanation for the available configuration options
-  -h, --help     output usage information
+  -V, --version   output the version number
+  new             create a new project from template
+  config          change configuration for the current directory
+  list            display the current configuration
+  reset           clear all configuration
+  site            serve the generated site
+  -w, --watch     watch for changes and rebuild
+  docs            a brief explanation for the available configuration options
+  -p, --port <n>  port used for serving the generated site
+  -h, --help      output usage information
 ```
 
 By default, running `c4builder` will attempt to build the project.
@@ -221,6 +223,10 @@ I would like to bind the **build** phase to the C4 model. It could parse the dia
 The project is still in it's early phase and I intend on using it on some actual projects in order to find more use cases and fix bugs.
 
 # Change log
+
+## v0.2.1 + v0.2.2
+
+Added the `c4builder --watch` option and some refactoring.
 
 ## v0.2.0
 

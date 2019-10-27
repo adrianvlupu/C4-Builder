@@ -19,6 +19,11 @@ const {
 } = require('./utils.js');
 const updateNotifier = require('update-notifier');
 
+const intro = () => {
+    console.log(chalk.blue(figlet.textSync('c4builder')));
+    console.log(chalk.gray('Blow up your software documentation writing skills'));
+};
+
 const getOptions = conf => {
     return {
         GENERATE_MD: conf.get('generateMD'),
@@ -51,8 +56,6 @@ const getOptions = conf => {
 module.exports = async () => {
     updateNotifier({ pkg: package }).notify();
 
-    let responses;
-
     program
         .version(package.version)
         .option('new', 'create a new project from template')
@@ -60,7 +63,7 @@ module.exports = async () => {
         .option('list', 'display the current configuration')
         .option('reset', 'clear all configuration')
         .option('site', 'serve the generated site')
-        .option('-w, --watch', 'watch for changes')
+        .option('-w, --watch', 'watch for changes and rebuild')
         .option('docs', 'a brief explanation for the available configuration options')
         .option('-p, --port <n>', 'port used for serving the generated site', parseInt)
         .parse(process.argv);
@@ -72,13 +75,13 @@ module.exports = async () => {
     if (program.docs)
         return cmdHelp();
 
+    //initial options
     let options = getOptions(conf);
 
     if (program.new || program.config || !options.HAS_RUN)
         clearConsole();
 
-    console.log(chalk.blue(figlet.textSync('c4builder')));
-    console.log(chalk.gray('Blow up your software documentation writing skills'));
+    intro();
 
     if (!options.HAS_RUN && !program.new) {
         console.log(`\nif you created the project using the 'c4model new' command you can just press enter and go with the default options to get a basic idea of how it works.\n`);
@@ -102,14 +105,29 @@ module.exports = async () => {
 
         let isBuilding = false;
         let attemptedWatchBuild = false;
+        //get options after wizard
         options = getOptions(conf);
-        if (program.watch || program.site) {
-            console.log(chalk.bold(chalk.yellow('\nWARNING:\nWatching for changes can take a long time if local image generation or pdf is enabled')));
+        if (program.watch) {
+            //watch warning
+            if (options.GENERATE_PDF ||
+                options.GENERATE_COMPLETE_PDF_FILE ||
+                options.GENERATE_LOCAL_IMAGES) {
+                console.log(chalk.bold(chalk.yellow('\nWARNING:')));
+                console.log(chalk.bold(chalk.yellow('Rebuilding with pdf or local image generation enabled will take a long time')));
+            }
+
             watch(options.ROOT_FOLDER, { recursive: true }, async (evt, name) => {
-                console.log('%s changed.', name);
+                // clearConsole();
+                // intro();
+                console.log(chalk.gray(`\n${name} changed. Rebuilding...`));
                 if (isBuilding) {
                     attemptedWatchBuild = true;
-                    return console.log(chalk.gray('already building, will rebuild when finishing'));
+                    if (options.GENERATE_PDF ||
+                        options.GENERATE_COMPLETE_PDF_FILE ||
+                        options.GENERATE_LOCAL_IMAGES)
+                        console.log(chalk.bold(chalk.yellow('Build already in progress, consider disabling pdf or local image generation ')));
+                    
+                    return;
                 }
 
                 isBuilding = true;

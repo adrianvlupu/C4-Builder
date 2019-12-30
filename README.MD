@@ -224,6 +224,10 @@ The project is still in it's early phase and I intend on using it on some actual
 
 # Change log
 
+## v0.2.3
+
+Updated template to include the new `Dynamic Diagram` in C4-PlantUML and fixed `npm audit` issues.
+
 ## v0.2.1 + v0.2.2
 
 Added the `c4builder --watch` option and some refactoring.

@@ -1,0 +1,15 @@
+@startuml
+!include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/latest/C4_Dynamic.puml
+
+Container(spa, "Single Page Application", "javascript and Angular", "Provides all the internet banking functionality to customers via thier web browser.")
+ContainerDb(db, "Database", "Oracle Database Schema", "Stores user registration information hashed authentication credentials, access logs, etc.")
+Container_Boundary(bc, "API Application"){
+    Component(signin, "Sign In Controller", "Spring MVC Rest Controller", "Allows users to sign in to the internet Banking System")
+    Component(security, "Security Component", "Spring Bean", "Provides functionality related to signing in, changing passwords, etc.")
+}
+
+Rel(spa, signin, "Submits credentials to", "JSON/HTTPS")
+Rel(signin, security, "Calls isAuthenticated() on")
+Rel(security, db, "select * from users where username = ?", "JDBC")
+
+@enduml

@@ -1,4 +1,49 @@
 {
+	"C4_Include_Context": {
+		"scope": "diagram",
+		"prefix": "Include C4 Context Diagram",
+		"body": [
+			"!include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/latest/C4_Context.puml",
+			"$0"
+		],
+		"description": "Include C4 Context Diagram"
+	},
+	"C4_Include_Container": {
+		"scope": "diagram",
+		"prefix": "Include C4 Container Diagram",
+		"body": [
+			"!include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/latest/C4_Container.puml",
+			"$0"
+		],
+		"description": "Include C4 Container Diagram"
+	},
+	"C4_Include_Component": {
+		"scope": "diagram",
+		"prefix": "Include C4 Component Diagram",
+		"body": [
+			"!include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/latest/C4_Component.puml",
+			"$0"
+		],
+		"description": "Include C4 Component Diagram"
+	},
+	"C4_Include_Deployment": {
+		"scope": "diagram",
+		"prefix": "Include C4 Deployment Diagram",
+		"body": [
+			"!include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/latest/C4_Deployment.puml",
+			"$0"
+		],
+		"description": "Include C4 Deployment Diagram"
+	},
+	"C4_Include_Dynamic": {
+		"scope": "diagram",
+		"prefix": "Include C4 Dynamic Diagram",
+		"body": [
+			"!include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/latest/C4_Dynamic.puml",
+			"$0"
+		],
+		"description": "Include C4 Dynamic Diagram"
+	},
 	"C4_Person": {
 		"scope": "diagram",
 		"prefix": "Person",
@@ -212,6 +257,24 @@
 		],
 		"description": "Add unidirectional Relationship with Technology to C4 diagram"
 	},
+	"C4_Relationship_Index": {
+		"scope": "diagram",
+		"prefix": "Relationship with Index",
+		"body": [
+			"RelIndex(${1:index}, ${2:from_alias}, ${3:to_alias}, \"${4:label}\")",
+			"$0"
+		],
+		"description": "Add unidirectional Relationship to C4 Dynamic Diagram"
+	},
+	"C4_Relationship_Index_Techn": {
+		"scope": "diagram",
+		"prefix": "Relationship with Technology and Index",
+		"body": [
+			"RelIndex(${1:index}, ${2:from_alias}, ${3:to_alias}, \"${4:label}\", \"${5:technology}\")",
+			"$0"
+		],
+		"description": "Add unidirectional Relationship with Technology to C4 Dynamic Diagram"
+	},
 	"C4_Layout_Right": {
 		"scope": "diagram",
 		"prefix": "Layout to Right side",
@@ -273,5 +336,27 @@
 			"}"
 		],
 		"description": "Add a deployment node to C4 diagram."
+	},
+	"C4_Dynamic_Increment": {
+		"scope": "diagram",
+		"prefix": [
+			"Increment index"
+		],
+		"body": [
+			"increment(${1:count})",
+			"$0"
+		],
+		"description": "Increment index of C4 Dynamic Diagram."
+	},
+	"C4_Dynamic_Set_Index": {
+		"scope": "diagram",
+		"prefix": [
+			"Set index"
+		],
+		"body": [
+			"setIndex(${1:value})",
+			"$0"
+		],
+		"description": "Set index of C4 Dynamic Diagram"
 	}
 }

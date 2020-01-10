@@ -24,7 +24,7 @@ I strongly encourage people to check them out first but if you want to dive righ
 
 <!-- ![idea](docs/images/idea.jpg) -->
 
-![edit](docs/images/edit.gif)
+![edit](https://raw.githubusercontent.com/adrianvlupu/C4-Builder/master/docs/images/edit.gif)
 
 # Getting started
 
@@ -32,7 +32,7 @@ I strongly encourage people to check them out first but if you want to dive righ
 
 The easiest way to get started is with the *new project* template.
 
-![new](docs/images/new.gif)
+![new](https://raw.githubusercontent.com/adrianvlupu/C4-Builder/master/docs/images/new.gif)
 
 ```bash
 c4builder new
@@ -105,7 +105,7 @@ The basic navigation, table of contents, local generation of images and their in
 
 c4builder comes with a wizard for managing configuration for each project folder.
 
-![wizard](docs/images/build.gif)
+![wizard](https://raw.githubusercontent.com/adrianvlupu/C4-Builder/master/docs/images/build.gif)
 
 > NOTE
 >
@@ -138,7 +138,7 @@ The output should have the same folder structure as the **source**. Each `.md` f
 
 The generated markdown files can be pushed to git and viewed directly as a readme.
 
-![mds](docs/images/md.gif)
+![mds](https://raw.githubusercontent.com/adrianvlupu/C4-Builder/master/docs/images/md.gif)
 
 #### Options:
 
@@ -146,13 +146,13 @@ The generated markdown files can be pushed to git and viewed directly as a readm
 
   The basic navigation comes in the form of a menu providing a link to the parent and descendants.
 
-  ![basicnav](docs/images/simple-nav.jpg)
+  ![basicnav](https://raw.githubusercontent.com/adrianvlupu/C4-Builder/master/docs/images/simple-nav.jpg)
 
 - table of contents (default)
 
   The table navigation always shows all entities and bolds the current one
   
-  ![tablenav](docs/images/table-nav.jpg)
+  ![tablenav](https://raw.githubusercontent.com/adrianvlupu/C4-Builder/master/docs/images/table-nav.jpg)
 
 ### Single markdown file
 
@@ -160,19 +160,19 @@ Outputs into a single file containing all entities. It includes a table of conte
 
 The generated markdown file makes for an easy single page readme for the repository.
 
-![singlemd](docs/images/single-md.jpg)
+![singlemd](https://raw.githubusercontent.com/adrianvlupu/C4-Builder/master/docs/images/single-md.jpg)
 
 ### Collection of pdf files each describing one entity
 
 A fast way to pass around information regarding only one particular System/Container/Component
 
-![pdf](docs/images/pdf.jpg)
+![pdf](https://raw.githubusercontent.com/adrianvlupu/C4-Builder/master/docs/images/pdf.jpg)
     
 ### Single pdf file with a table of contents
    
 The easiest format to share the full documentation
 
-![pdffull](docs/images/full-pdf.jpg)
+![pdffull](https://raw.githubusercontent.com/adrianvlupu/C4-Builder/master/docs/images/full-pdf.jpg)
 
 ### Docsify site with a sidebar
 
@@ -182,11 +182,11 @@ The site is minimalistic including only a sidebar with the System/Container/Comp
 
 The sidebar is generated manually so that it only contains the main entities defined in the project in a hierarchical way.
 
-![site](docs/images/site.jpg)
+![site](https://raw.githubusercontent.com/adrianvlupu/C4-Builder/master/docs/images/site.jpg)
 
 By going to the github repository settings and enabling GitHub pages the site be pushed with ease and provide an overview to all people involved in the project without having to worry about which version of pdf file got sent when.
 
-![github](docs/images/githubpages.gif)
+![github](https://raw.githubusercontent.com/adrianvlupu/C4-Builder/master/docs/images/githubpages.gif)
 
 ### Generate diagrams locally
 

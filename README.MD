@@ -208,13 +208,7 @@ The current entity structure is inserted after the header
 
 ### Custom pdf
 
-If defined, this css is used in the generation of the pdf files. It is useful for changing the font size `body{font-size:26px;}` on devices with high resolution screens.
-
-# Limitations
-
-- The current version does not support source and destination folders deeper than one level.
-
-- Including a local image in a markdown will break after the build process.
+If defined, this css is used in the generation of the pdf files.
 
 # Future plans
 
@@ -223,6 +217,12 @@ I would like to bind the **build** phase to the C4 model. It could parse the dia
 The project is still in it's early phase and I intend on using it on some actual projects in order to find more use cases and fix bugs.
 
 # Change log
+
+## v0.2.4
+
+Solved the limation of including local images in the markdown files.
+
+Updated the project template with the diagram descriptions from [C4Model](https://c4model.com/#CoreDiagrams)
 
 ## v0.2.3
 

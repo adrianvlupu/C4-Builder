@@ -14,14 +14,18 @@ Take a look at
 
 - [vscode-plantuml](https://github.com/qjebbs/vscode-plantuml) plugin for visual studio code to view diagrams at design time
 
-open the terminal and run
+Open the terminal and run the following commands to start compiling the documentation
 
 ```bash
 npm i -g c4builder
 c4builder
 ```
 
-to start compiling the documentation
+> Note on using local images inside markdown files
+>
+> Images should be placed next to the markdown file using them.
+>
+> All of them will be copied over to the `docs` folder either in `/` (in the case of a single MD/PDF file) or following the same folder structure as in `src`, so make sure they have unique names.  
 
 # Abstractions used
 

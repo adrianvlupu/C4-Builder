@@ -63,6 +63,18 @@ const generateTree = async (dir, options) => {
             const fileContents = await readFile(path.join(dir, pumlFile));
             item.pumlFiles.push({ dir: pumlFile, content: fileContents });
         }
+
+        //copy all other files
+        const otherFiles = files.filter(x => ['.md', '.puml'].indexOf(path.extname(x).toLowerCase()) === -1);
+        for (const otherFile of otherFiles) {
+            if (fs.statSync(path.join(dir, otherFile)).isDirectory())
+                continue;
+
+            if (options.GENERATE_MD || options.GENERATE_PDF || options.GENERATE_WEBSITE)
+                await fsextra.copy(path.join(dir, otherFile), path.join(options.DIST_FOLDER, dir.replace(options.ROOT_FOLDER, ''), otherFile));
+            if (options.GENERATE_COMPLETE_PDF_FILE || options.GENERATE_COMPLETE_MD_FILE)
+                await fsextra.copy(path.join(dir, otherFile), path.join(options.DIST_FOLDER, otherFile));
+        }
     };
 
     await build(dir);
@@ -179,7 +191,7 @@ const generateCompletePDF = async (tree, options) => {
     //table of contents
     let tableOfContents = '';
     for (const item of tree)
-        tableOfContents += `${'  '.repeat(item.level - 1)}* ${item.name}\n`;
+        tableOfContents += `${'  '.repeat(item.level - 1)}* [${item.name}](#${encodeURIPath(item.name).replace(/%20/g, '-')})\n`;
     MD += `\n\n${tableOfContents}\n---`;
 
     for (const item of tree) {

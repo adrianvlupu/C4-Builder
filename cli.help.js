@@ -37,6 +37,8 @@ ${chalk.cyan('Generate website')}
 Uses docsify to generate a website with a sidebar for navigation. The site can be easily deployed to github pages.
     ${chalk.cyan('Website docsify theme')}
     Changes the default theme of the generated docsify website
+${chalk.cyan('PlantUML version')}
+Uses the specific plantuml version jar file for generating images.
 ${chalk.cyan('Generate diagram images locally')}
 Uses the localy installed plantuml package to build svg images for each diagram.
 ${chalk.cyan('Replace diagrams with a link')}

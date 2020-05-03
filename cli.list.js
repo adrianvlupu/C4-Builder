@@ -25,6 +25,9 @@ Generate website: ${currentConfiguration.GENERATE_WEBSITE !== undefined ? chalk.
             : ''}
 Repository Url: ${currentConfiguration.REPO_NAME ? chalk.green(currentConfiguration.REPO_NAME) : chalk.red('not set')}
 Include breadcrumbs: ${currentConfiguration.INCLUDE_BREADCRUMBS !== undefined ? chalk.green(currentConfiguration.INCLUDE_BREADCRUMBS) : chalk.red('not set')}
+
+PlantUML version: ${currentConfiguration.PLANTUML_VERSION !== undefined ? chalk.green(currentConfiguration.PLANTUML_VERSION) : chalk.red('not set')}
+
 Generate diagram images locally: ${currentConfiguration.GENERATE_LOCAL_IMAGES !== undefined ? chalk.green(currentConfiguration.GENERATE_LOCAL_IMAGES) : chalk.red('not set')}
 Replace diagrams with a link: ${currentConfiguration.INCLUDE_LINK_TO_DIAGRAM !== undefined ? chalk.green(currentConfiguration.INCLUDE_LINK_TO_DIAGRAM) : chalk.red('not set')}
 Place diagrams before text: ${currentConfiguration.DIAGRAMS_ON_TOP !== undefined ? chalk.green(currentConfiguration.DIAGRAMS_ON_TOP) : chalk.red('not set')}

@@ -218,6 +218,14 @@ The project is still in it's early phase and I intend on using it on some actual
 
 # Change log
 
+## v0.2.7
+
+Resolved npm audit issues
+
+The projects generated now support PlantUML versioning
+
+PlantUML jar files included
+
 ## v0.2.4
 
 Solved the limation of including local images in the markdown files.

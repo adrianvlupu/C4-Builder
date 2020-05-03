@@ -2,6 +2,10 @@ const inquirer = require('inquirer');
 const joi = require('joi');
 const fs = require('fs');
 const path = require('path');
+const chalk = require('chalk');
+const {
+    plantumlVersions
+} = require('./utils')
 
 const validate = (schema) => answers => {
     return !(joi.validate(answers, schema).error);
@@ -167,37 +171,83 @@ module.exports = async (currentConfiguration, conf, program) => {
             conf.set('pdfCss', pdfOptions.pdfCss);
         }
     }
+
+    let plantumlVersion, ver;
+    if (currentConfiguration.PLANTUML_VERSION === undefined || program.config) {
+        let defaultPlantumlVersion = currentConfiguration.PLANTUML_VERSION === undefined ? 'latest' : currentConfiguration.PLANTUML_VERSION;
+        responses = await inquirer.prompt({
+            type: 'list',
+            name: 'plantumlVersion',
+            message: 'PlantUML version:',
+            default: defaultPlantumlVersion,
+            choices: plantumlVersions.map(v => {
+                return {
+                    name: v.version,
+                    value: v.version
+                };
+            }).concat({
+                name: 'latest (compatible with plantuml online server)',
+                value: 'latest'
+            })
+        });
+        plantumlVersion = responses.plantumlVersion;
+        conf.set('plantumlVersion', plantumlVersion);
+        if (currentConfiguration.PLANTUML_VERSION && plantumlVersion !== currentConfiguration.PLANTUML_VERSION) {
+            console.log(chalk.bold(chalk.yellow('WARNING:')));
+            console.log(chalk.bold(chalk.yellow(`You need to update the plantuml file to include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/${plantumlVersion}.`)));
+        }
+    } else {
+        plantumlVersion = currentConfiguration.PLANTUML_VERSION;
+    }
+    ver = plantumlVersions.find(v => v.version === plantumlVersion);
+    if (plantumlVersion === 'latest')
+        ver = plantumlVersions.find(v => v.isLatest);
+    if (!ver)
+        throw new Error(`PlantUML version ${options.PLANTUML_VERSION} not supported`);
+    if (!ver.isLatest){
+        console.log(chalk.bold(chalk.yellow(`Generating diagram images using the online plantuml server will break on version ${ver.version}.`)));
+        console.log(chalk.bold(chalk.yellow(`The build will generate diagram images using the included ${ver.jar}.`)));
+    }
+
     if (currentConfiguration.GENERATE_LOCAL_IMAGES === undefined ||
         currentConfiguration.INCLUDE_BREADCRUMBS === undefined || currentConfiguration.INCLUDE_LINK_TO_DIAGRAM === undefined || program.config) {
         let defaults = [
             currentConfiguration.INCLUDE_BREADCRUMBS === undefined ? 'includeBreadcrumbs' : currentConfiguration.INCLUDE_BREADCRUMBS ? 'includeBreadcrumbs' : null,
             currentConfiguration.GENERATE_LOCAL_IMAGES === undefined ? null : currentConfiguration.GENERATE_LOCAL_IMAGES ? 'generateLocalImages' : null,
             currentConfiguration.INCLUDE_LINK_TO_DIAGRAM === undefined ? null : currentConfiguration.INCLUDE_LINK_TO_DIAGRAM ? 'includeLinkToDiagram' : null,
-            currentConfiguration.DIAGRAMS_ON_TOP === undefined ? null : currentConfiguration.DIAGRAMS_ON_TOP ? 'diagramsOnTop' : null
+            currentConfiguration.DIAGRAMS_ON_TOP === undefined ? 'diagramsOnTop' : currentConfiguration.DIAGRAMS_ON_TOP ? 'diagramsOnTop' : null
         ];
+        let choices = [{
+            name: 'Include breadcrumbs',
+            value: 'includeBreadcrumbs'
+        }, {
+            name: 'Replace diagrams with a link',
+            value: 'includeLinkToDiagram'
+        }, {
+            name: 'Place diagrams before text',
+            value: 'diagramsOnTop'
+        }];
+        if (ver.isLatest)
+            choices.push({
+                name: 'Generate diagram images locally',
+                value: 'generateLocalImages'
+            });
+
         responses = await inquirer.prompt({
             type: 'checkbox',
             name: 'generate',
             message: 'Compilation format:',
             default: defaults,
-            choices: [{
-                name: 'Include breadcrumbs',
-                value: 'includeBreadcrumbs'
-            }, {
-                name: 'Generate diagram images locally',
-                value: 'generateLocalImages'
-            }, {
-                name: 'Replace diagrams with a link',
-                value: 'includeLinkToDiagram'
-            }, {
-                name: 'Place diagrams before text',
-                value: 'diagramsOnTop'
-            }]
+            choices: choices
         });
         conf.set('includeBreadcrumbs', !!responses.generate.find(x => x === 'includeBreadcrumbs'));
-        conf.set('generateLocalImages', !!responses.generate.find(x => x === 'generateLocalImages'));
         conf.set('includeLinkToDiagram', !!responses.generate.find(x => x === 'includeLinkToDiagram'));
         conf.set('diagramsOnTop', !!responses.generate.find(x => x === 'diagramsOnTop'));
+        if (ver.isLatest) {
+            conf.set('generateLocalImages', !!responses.generate.find(x => x === 'generateLocalImages'));
+        } else {
+            conf.set('generateLocalImages', true);
+        }
     }
 
     if (!currentConfiguration.CHARSET || program.config) {

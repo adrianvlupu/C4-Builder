@@ -1,20 +1,19 @@
 #!/usr/bin/env node
 
-const plantuml = require('node-plantuml');
 const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 const fsextra = require('fs-extra');
 const docsifyTemplate = require('./docsify.template.js');
-const markdownpdf = require("md-to-pdf");
-
+const markdownpdf = require("md-to-pdf").mdToPdf;
 
 const {
     encodeURIPath,
     makeDirectory,
     readFile,
     writeFile,
-    plantUmlServerUrl
+    plantUmlServerUrl,
+    plantumlVersions
 } = require('./utils.js');
 
 const getFolderName = (dir, root, homepage) => {
@@ -99,10 +98,21 @@ const generateImages = async (tree, options, onImageGenerated) => {
                     `${path.parse(pumlFile).name}.${options.DIAGRAM_FORMAT}`
                 )
             );
+
+            let ver = plantumlVersions.find(v => v.version === options.PLANTUML_VERSION);
+            if (options.PLANTUML_VERSION === 'latest')
+                ver = plantumlVersions.find(v => v.isLatest);
+            if (!ver)
+                throw new Error(`PlantUML version ${options.PLANTUML_VERSION} not supported`);
+
+            process.env.PLANTUML_HOME = path.join(__dirname, 'vendor', ver.jar);
+            const plantuml = require('node-plantuml');
+
             plantuml
                 .generate(path.join(item.dir, pumlFile), { format: options.DIAGRAM_FORMAT, charset: options.CHARSET })
                 .out
                 .pipe(stream);
+
             totalImages++;
 
             imagePromises.push(new Promise(resolve => stream.on('finish', resolve)).then(() => {
@@ -244,11 +254,13 @@ const generateCompletePDF = async (tree, options) => {
         `${options.PROJECT_NAME}_TEMP.md`
     ), MD);
     //convert to pdf
-    await markdownpdf(
-        './' + path.join(
-            options.DIST_FOLDER,
-            `${options.PROJECT_NAME}_TEMP.md`
-        ), {
+    await markdownpdf({
+        path:
+            './' + path.join(
+                options.DIST_FOLDER,
+                `${options.PROJECT_NAME}_TEMP.md`
+            )
+    }, {
         stylesheet: [options.PDF_CSS],
         pdf_options: {
             scale: 1,
@@ -434,12 +446,14 @@ const generatePDF = async (tree, options, onProgress) => {
             item.dir.replace(options.ROOT_FOLDER, ''),
             `${options.MD_FILE_NAME}_TEMP.md`
         ), MD).then(() => {
-            return markdownpdf(
-                path.join(
-                    options.DIST_FOLDER,
-                    item.dir.replace(options.ROOT_FOLDER, ''),
-                    `${options.MD_FILE_NAME}_TEMP.md`
-                ), {
+            return markdownpdf({
+                path:
+                    path.join(
+                        options.DIST_FOLDER,
+                        item.dir.replace(options.ROOT_FOLDER, ''),
+                        `${options.MD_FILE_NAME}_TEMP.md`
+                    )
+            }, {
                 stylesheet: [options.PDF_CSS],
                 pdf_options: {
                     scale: 1,

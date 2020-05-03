@@ -26,6 +26,7 @@ const intro = () => {
 
 const getOptions = conf => {
     return {
+        PLANTUML_VERSION: conf.get('plantumlVersion'),
         GENERATE_MD: conf.get('generateMD'),
         GENERATE_PDF: conf.get('generatePDF'),
         GENERATE_WEBSITE: conf.get('generateWEB'),

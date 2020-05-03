@@ -123,6 +123,15 @@ const clearConsole = () => {
     process.stdout.write('\x1b[0f');
 }
 
+const plantumlVersions = [{
+    version: '1.2019.09',
+    jar: 'plantuml-1.2019.9.jar'
+}, {
+    version: '1.2020.07',
+    isLatest: true,
+    jar: 'plantuml-1.2020.7.jar'
+}];
+
 module.exports = {
     makeDirectory,
     readFile,
@@ -130,5 +139,6 @@ module.exports = {
     encodeURIPath,
     writeOnSameLine,
     clearConsole,
-    plantUmlServerUrl
+    plantUmlServerUrl,
+    plantumlVersions
 }

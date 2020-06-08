@@ -17,7 +17,7 @@ const {
 } = require('./utils.js');
 
 const getFolderName = (dir, root, homepage) => {
-    return dir === root ? homepage : path.parse(dir).name;
+    return dir === root ? homepage : path.parse(dir).base;
 };
 
 const generateTree = async (dir, options) => {

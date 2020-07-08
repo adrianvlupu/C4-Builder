@@ -26,11 +26,12 @@ const generateTree = async (dir, options) => {
     const build = async (dir, parent) => {
         let name = getFolderName(dir, options.ROOT_FOLDER, options.HOMEPAGE_NAME);
         let item = tree.find(x => x.dir === dir);
+
         if (!item) {
             item = {
                 dir: dir,
                 name: name,
-                level: dir.split(path.sep).length,
+                level: dir.replace(options.ROOT_FOLDER, '').split(path.sep).length,
                 parent: parent,
                 mdFiles: [],
                 pumlFiles: [],
@@ -500,7 +501,7 @@ const generateWebMD = async (tree, options) => {
 
     for (const item of tree) {
         //sidebar
-        docsifySideBar += `${'  '.repeat(item.level - 1)}* [${item.name}](${encodeURIPath(path.join(...path.join(item.dir).split(path.sep).splice(1), options.WEB_FILE_NAME))})\n`;
+        docsifySideBar += `${'  '.repeat(item.level - 1)}* [${item.name}](${encodeURIPath(path.join(item.dir.replace(options.ROOT_FOLDER, ''), options.WEB_FILE_NAME))})\n`;
         let name = getFolderName(item.dir, options.ROOT_FOLDER, options.HOMEPAGE_NAME);
 
         //title
@@ -590,6 +591,13 @@ const build = async (options) => {
     //clear dist directory
     await fsextra.emptyDir(options.DIST_FOLDER);
     await makeDirectory(path.join(options.DIST_FOLDER));
+
+    const rootFolder = options.ROOT_FOLDER.split(/[\/\\]/);
+    const distFolder = options.DIST_FOLDER.split(/[\/\\]/);
+    if (rootFolder.length > 1)
+        options.ROOT_FOLDER = rootFolder.join(path.sep);
+    if (distFolder.length > 1)
+        options.DIST_FOLDER = distFolder.join(path.sep);
 
     //actual build
     console.log(chalk.green(`\nbuilding documentation in ./${options.DIST_FOLDER}`));

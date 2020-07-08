@@ -43,9 +43,6 @@ module.exports = async (currentConfiguration, conf, program) => {
             validate: answers => {
                 let isValid = validate(joi.string().trim().optional())(answers);
                 if (isValid) {
-                    if (answers.indexOf('/') !== -1 || answers.indexOf('\\') !== -1)
-                        return false;
-
                     //check it's an actual folder
                     let isDirectory = fs.statSync(path.join(process.cwd(), answers)).isDirectory();
                     if (isDirectory)
@@ -65,11 +62,8 @@ module.exports = async (currentConfiguration, conf, program) => {
             default: currentConfiguration.DIST_FOLDER || 'docs',
             validate: answers => {
                 let isValid = validate(joi.string().trim().optional());
-                if (isValid) {
-                    if (answers.indexOf('/') !== -1 || answers.indexOf('\\') !== -1)
-                        return false;
+                if (isValid)
                     return true;
-                }
                 return false;
             }
         });
@@ -186,7 +180,7 @@ module.exports = async (currentConfiguration, conf, program) => {
                     value: v.version
                 };
             }).concat({
-                name: 'latest (compatible with plantuml online server)',
+                name: 'latest (compatible with plantuml.com online server)',
                 value: 'latest'
             })
         });
@@ -204,7 +198,7 @@ module.exports = async (currentConfiguration, conf, program) => {
         ver = plantumlVersions.find(v => v.isLatest);
     if (!ver)
         throw new Error(`PlantUML version ${options.PLANTUML_VERSION} not supported`);
-    if (!ver.isLatest){
+    if (!ver.isLatest) {
         console.log(chalk.bold(chalk.yellow(`Generating diagram images using the online plantuml server will break on version ${ver.version}.`)));
         console.log(chalk.bold(chalk.yellow(`The build will generate diagram images using the included ${ver.jar}.`)));
     }

@@ -51,7 +51,7 @@ const generateTemplate = async (dir, projectName, plantumlVersion) => {
 };
 
 module.exports = async () => {
-    console.log('\nThis will create a new folder with the name of the project');
+    console.log('\nThis will create a new folder with the name as the project');
 
     let responses;
 
@@ -89,7 +89,7 @@ module.exports = async () => {
                 value: v.version
             };
         }).concat({
-            name: 'latest (compatible with plantuml online server)',
+            name: 'latest (compatible with plantuml.com online server)',
             value: 'latest'
         })
     });
@@ -113,7 +113,6 @@ module.exports = async () => {
         default: true
     })
     let isVSCode = responses.isVSCode;
-    console.log(isVSCode)
 
     await makeDirectory(projectName);
     await generateTemplate(path.join(__dirname, 'template'), projectName, plantumlVersion);
@@ -141,6 +140,5 @@ module.exports = async () => {
     console.log(`> cd ${projectName}`);
     console.log(`> c4builder`);
     console.log(chalk.gray(`the wizard will guide you through the rest of the configuration`));
-    console.log(chalk.gray(`check out the ./${projectName}/docs folder created`));
     return;
 };

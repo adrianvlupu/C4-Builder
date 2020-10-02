@@ -33,6 +33,7 @@ const getOptions = conf => {
         GENERATE_COMPLETE_MD_FILE: conf.get('generateCompleteMD'),
         GENERATE_COMPLETE_PDF_FILE: conf.get('generateCompletePDF'),
         GENERATE_LOCAL_IMAGES: conf.get('generateLocalImages'),
+        EMBED_SVG_DIAGRAM: conf.get('embedSvgDiagram'),
         ROOT_FOLDER: conf.get('rootFolder'),
         DIST_FOLDER: conf.get('distFolder'),
         PROJECT_NAME: conf.get('projectName'),

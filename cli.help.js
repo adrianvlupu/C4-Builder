@@ -49,5 +49,7 @@ ${chalk.cyan('Place diagrams before text')}
 Choose to place diagrams before or after the text.
 ${chalk.cyan('Diagram format')}
 Choose diagram format. Available format: png and svg.
+${chalk.cyan('Use data URIs')}
+Inline diagram images as data URIs. Requires local image generations and recommended diagram format is png.
     `);
 };

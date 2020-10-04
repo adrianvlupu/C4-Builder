@@ -43,14 +43,15 @@ const getOptions = conf => {
         INCLUDE_BREADCRUMBS: conf.get('includeBreadcrumbs'),
         INCLUDE_TABLE_OF_CONTENTS: conf.get('includeTableOfContents'),
         INCLUDE_LINK_TO_DIAGRAM: conf.get('includeLinkToDiagram'),
-        PDF_CSS: conf.get('pdfCss') || path.join(__dirname, 'pdf.css'),
+        PDF_CSS: conf.get('pdfCss') || path.join(__dirname, 'pdf.css'), // TODO: makes absolute path. Not portable.
         DIAGRAMS_ON_TOP: conf.get('diagramsOnTop'),
         CHARSET: conf.get('charset'),
         WEB_PORT: conf.get('webPort'),
         HAS_RUN: conf.get('hasRun'),
         MD_FILE_NAME: 'README',
         WEB_FILE_NAME: 'HOME',
-        DIAGRAM_FORMAT: conf.get('diagramFormat')
+        DIAGRAM_FORMAT: conf.get('diagramFormat'),
+        USE_DATA_URIS: conf.get('useDataURIs')
     }
 };
 

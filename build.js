@@ -126,6 +126,17 @@ const generateImages = async (tree, options, onImageGenerated) => {
     return Promise.all(imagePromises);
 };
 
+const generateDataUri = async (item, pumlFile, options) => {
+    let imageData = await fs.promises.readFile(path.join(
+        '.',
+        `${options.DIST_FOLDER}`,
+        item.dir.replace(options.ROOT_FOLDER, ''),
+        path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`));
+
+    let base64 = imageData.toString('base64')
+    return `data:image/${options.DIAGRAM_FORMAT};base64,${base64}`;
+}
+
 const generateCompleteMD = async (tree, options) => {
     let filePromises = [];
 
@@ -156,7 +167,7 @@ const generateCompleteMD = async (tree, options) => {
             }
         };
         //add diagrams
-        const appendImages = () => {
+        const appendImages = async () => {
             for (const pumlFile of item.pumlFiles) {
                 MD += '\n\n';
                 let diagramUrl = encodeURIPath(path.join(
@@ -166,6 +177,9 @@ const generateCompleteMD = async (tree, options) => {
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
                     diagramUrl = plantUmlServerUrl(pumlFile.content, options);
+
+                if (options.GENERATE_LOCAL_IMAGES && options.USE_DATA_URIS)
+                    diagramUrl = await generateDataUri(item, pumlFile, options);
 
                 let diagramImage = `![diagram](${diagramUrl})`;
                 let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
@@ -178,11 +192,11 @@ const generateCompleteMD = async (tree, options) => {
         };
 
         if (options.DIAGRAMS_ON_TOP) {
-            appendImages();
+            await appendImages();
             appendText();
         } else {
             appendText();
-            appendImages();
+            await appendImages();
         }
     }
 
@@ -354,7 +368,7 @@ const generateMD = async (tree, options, onProgress) => {
             }
         };
         //add diagrams
-        const appendImages = () => {
+        const appendImages = async () => {
             for (const pumlFile of item.pumlFiles) {
                 MD += '\n\n';
                 let diagramUrl = encodeURIPath(path.join(
@@ -363,6 +377,9 @@ const generateMD = async (tree, options, onProgress) => {
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
                     diagramUrl = plantUmlServerUrl(pumlFile.content, options);
+
+                if (options.GENERATE_LOCAL_IMAGES && options.USE_DATA_URIS)
+                    diagramUrl = await generateDataUri(item, pumlFile, options);
 
                 let diagramImage = `![diagram](${diagramUrl})`;
                 let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
@@ -375,11 +392,11 @@ const generateMD = async (tree, options, onProgress) => {
         };
 
         if (options.DIAGRAMS_ON_TOP) {
-            appendImages();
+            await appendImages();
             appendText();
         } else {
             appendText();
-            appendImages();
+            await appendImages();
         }
 
         //write to disk
@@ -514,7 +531,7 @@ const generateWebMD = async (tree, options) => {
             }
         };
         //add diagrams
-        const appendImages = () => {
+        const appendImages = async () => {
             for (const pumlFile of item.pumlFiles) {
                 MD += '\n\n';
 
@@ -524,6 +541,9 @@ const generateWebMD = async (tree, options) => {
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
                     diagramUrl = plantUmlServerUrl(pumlFile.content, options);
+
+                if (options.GENERATE_LOCAL_IMAGES && options.USE_DATA_URIS)
+                    diagramUrl = await generateDataUri(item, pumlFile, options);
 
                 let diagramImage = `![diagram](${diagramUrl})`;
                 let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
@@ -538,11 +558,11 @@ const generateWebMD = async (tree, options) => {
         };
 
         if (options.DIAGRAMS_ON_TOP) {
-            appendImages();
+            await appendImages();
             appendText();
         } else {
             appendText();
-            appendImages();
+            await appendImages();
         }
 
         //write to disk

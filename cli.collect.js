@@ -213,9 +213,10 @@ module.exports = async (currentConfiguration, conf, program) => {
         currentConfiguration.INCLUDE_BREADCRUMBS === undefined || currentConfiguration.INCLUDE_LINK_TO_DIAGRAM === undefined || program.config) {
         let defaults = [
             currentConfiguration.INCLUDE_BREADCRUMBS === undefined ? 'includeBreadcrumbs' : currentConfiguration.INCLUDE_BREADCRUMBS ? 'includeBreadcrumbs' : null,
-            currentConfiguration.GENERATE_LOCAL_IMAGES === undefined ? null : currentConfiguration.GENERATE_LOCAL_IMAGES ? 'generateLocalImages' : null,
             currentConfiguration.INCLUDE_LINK_TO_DIAGRAM === undefined ? null : currentConfiguration.INCLUDE_LINK_TO_DIAGRAM ? 'includeLinkToDiagram' : null,
-            currentConfiguration.DIAGRAMS_ON_TOP === undefined ? 'diagramsOnTop' : currentConfiguration.DIAGRAMS_ON_TOP ? 'diagramsOnTop' : null
+            currentConfiguration.DIAGRAMS_ON_TOP === undefined ? 'diagramsOnTop' : currentConfiguration.DIAGRAMS_ON_TOP ? 'diagramsOnTop' : null,
+            currentConfiguration.GENERATE_LOCAL_IMAGES === undefined ? null : currentConfiguration.GENERATE_LOCAL_IMAGES ? 'generateLocalImages' : null,
+            currentConfiguration.USE_DATA_URIS === undefined ? null : currentConfiguration.USE_DATA_URIS ? 'useDataURIs' : null
         ];
         let choices = [{
             name: 'Include breadcrumbs',
@@ -226,6 +227,9 @@ module.exports = async (currentConfiguration, conf, program) => {
         }, {
             name: 'Place diagrams before text',
             value: 'diagramsOnTop'
+        }, {
+            name: 'Inline images with data URIs. (Requires generateLocalImages to be on or non-latest plantuml)',
+            value: 'useDataURIs'
         }];
         if (ver.isLatest)
             choices.push({
@@ -245,8 +249,10 @@ module.exports = async (currentConfiguration, conf, program) => {
         conf.set('diagramsOnTop', !!responses.generate.find(x => x === 'diagramsOnTop'));
         if (ver.isLatest) {
             conf.set('generateLocalImages', !!responses.generate.find(x => x === 'generateLocalImages'));
+            conf.set('useDataURIs', !!responses.generate.find(x => x === 'useDataURIs'));
         } else {
             conf.set('generateLocalImages', true);
+            conf.set('useDataURIs', !!responses.generate.find(x => x === 'useDataURIs'));
         }
     }
 

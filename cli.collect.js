@@ -259,4 +259,14 @@ module.exports = async (currentConfiguration, conf, program) => {
         });
         conf.set('charset', responses.charset);
     }
+
+    if (!currentConfiguration.SERVER_BASE_ADDRESS || program.config) {
+        responses = await inquirer.prompt({
+            type: 'input',
+            name: 'serverBaseAddress',
+            message: 'Change server base address',
+            default: currentConfiguration.SERVER_BASE_ADDRESS || 'https://www.plantuml.com/plantuml/'
+        });
+        conf.set('serverBaseAddress', responses.serverBaseAddress);
+    }
 };

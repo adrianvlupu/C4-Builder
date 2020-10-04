@@ -165,7 +165,7 @@ const generateCompleteMD = async (tree, options) => {
                     path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    diagramUrl = plantUmlServerUrl(pumlFile.content, options);
 
                 let diagramImage = `![diagram](${diagramUrl})`;
                 let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
@@ -231,7 +231,7 @@ const generateCompletePDF = async (tree, options) => {
                     path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    diagramUrl = plantUmlServerUrl(pumlFile.content, options);
 
                 let diagramImage = `![diagram](${diagramUrl})`;
 
@@ -362,7 +362,7 @@ const generateMD = async (tree, options, onProgress) => {
                     path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    diagramUrl = plantUmlServerUrl(pumlFile.content, options);
 
                 let diagramImage = `![diagram](${diagramUrl})`;
                 let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
@@ -423,7 +423,7 @@ const generatePDF = async (tree, options, onProgress) => {
                 MD += '\n\n';
                 let diagramUrl = encodeURIPath(path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`);
                 if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    diagramUrl = plantUmlServerUrl(pumlFile.content, options);
 
                 let diagramImage = `![diagram](${diagramUrl})`;
 
@@ -523,7 +523,7 @@ const generateWebMD = async (tree, options) => {
                     path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    diagramUrl = plantUmlServerUrl(pumlFile.content, options);
 
                 let diagramImage = `![diagram](${diagramUrl})`;
                 let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;

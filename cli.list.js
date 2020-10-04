@@ -32,6 +32,7 @@ Generate diagram images locally: ${currentConfiguration.GENERATE_LOCAL_IMAGES !=
 Replace diagrams with a link: ${currentConfiguration.INCLUDE_LINK_TO_DIAGRAM !== undefined ? chalk.green(currentConfiguration.INCLUDE_LINK_TO_DIAGRAM) : chalk.red('not set')}
 Place diagrams before text: ${currentConfiguration.DIAGRAMS_ON_TOP !== undefined ? chalk.green(currentConfiguration.DIAGRAMS_ON_TOP) : chalk.red('not set')}
 Charset: ${currentConfiguration.CHARSET !== undefined ? chalk.green(currentConfiguration.CHARSET) : chalk.red('not set')}
+Diagram format: ${currentConfiguration.DIAGRAM_FORMAT !== undefined ? chalk.green(currentConfiguration.DIAGRAM_FORMAT) : chalk.red('not set')}
 `);
     return;
 };

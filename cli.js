@@ -50,7 +50,7 @@ const getOptions = conf => {
         HAS_RUN: conf.get('hasRun'),
         MD_FILE_NAME: 'README',
         WEB_FILE_NAME: 'HOME',
-        DIAGRAM_FORMAT: 'svg'
+        DIAGRAM_FORMAT: conf.get('diagramFormat')
     }
 };
 

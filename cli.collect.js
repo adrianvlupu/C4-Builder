@@ -259,4 +259,15 @@ module.exports = async (currentConfiguration, conf, program) => {
         });
         conf.set('charset', responses.charset);
     }
+
+    if (!currentConfiguration.DIAGRAM_FORMAT || program.config) {
+        responses = await inquirer.prompt({
+            type: 'list',
+            name: 'diagramFormat',
+            message: 'Select diagram format',
+            choices: ['svg', 'png'],
+            default: currentConfiguration.DIAGRAM_FORMAT || 'svg'
+        });
+        conf.set('diagramFormat', responses.diagramFormat);
+    }
 };

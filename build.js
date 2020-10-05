@@ -4,7 +4,7 @@ const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 const fsextra = require('fs-extra');
-const docsifyTemplate = require('./docsify.template.js');
+let docsifyTemplate = require('./docsify.template.js');
 const markdownpdf = require("md-to-pdf").mdToPdf;
 
 const {
@@ -553,6 +553,10 @@ const generateWebMD = async (tree, options) => {
         ), MD));
     }
 
+    if (options.DOCSIFY_TEMPLATE && options.DOCSIFY_TEMPLATE !== "" ){
+        docsifyTemplate = require(path.join(process.cwd(), options.DOCSIFY_TEMPLATE));
+    }
+    
     //docsify homepage
     filePromises.push(writeFile(path.join(
         options.DIST_FOLDER,

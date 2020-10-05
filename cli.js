@@ -39,6 +39,7 @@ const getOptions = conf => {
         REPO_NAME: conf.get('repoUrl'),
         HOMEPAGE_NAME: conf.get('homepageName'),
         WEB_THEME: conf.get('webTheme'),
+        DOCSIFY_TEMPLATE: conf.get('docsifyTemplate'),
         INCLUDE_NAVIGATION: conf.get('includeNavigation'),
         INCLUDE_BREADCRUMBS: conf.get('includeBreadcrumbs'),
         INCLUDE_TABLE_OF_CONTENTS: conf.get('includeTableOfContents'),

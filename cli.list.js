@@ -21,7 +21,9 @@ Generate a single complete pdf file: ${currentConfiguration.GENERATE_COMPLETE_PD
             : ''}
 Generate website: ${currentConfiguration.GENERATE_WEBSITE !== undefined ? chalk.green(currentConfiguration.GENERATE_WEBSITE) : chalk.red('not set')}
     ${currentConfiguration.GENERATE_WEBSITE ?
-            `Website docsify theme: ${currentConfiguration.WEB_THEME ? chalk.green(currentConfiguration.WEB_THEME) : chalk.red('not set')}`
+            `Website docsify theme: ${currentConfiguration.WEB_THEME ? chalk.green(currentConfiguration.WEB_THEME) : chalk.red('not set')}
+            Path to a specific Docsify template: ${currentConfiguration.DOCSIFY_TEMPLATE ? chalk.green(currentConfiguration.DOCSIFY_TEMPLATE) : chalk.red('not set')}
+            `
             : ''}
 Repository Url: ${currentConfiguration.REPO_NAME ? chalk.green(currentConfiguration.REPO_NAME) : chalk.red('not set')}
 Include breadcrumbs: ${currentConfiguration.INCLUDE_BREADCRUMBS !== undefined ? chalk.green(currentConfiguration.INCLUDE_BREADCRUMBS) : chalk.red('not set')}

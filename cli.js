@@ -51,7 +51,7 @@ const getOptions = conf => {
         MD_FILE_NAME: 'README',
         WEB_FILE_NAME: 'HOME',
         DIAGRAM_FORMAT: 'svg',
-        SERVER_BASE_ADDRESS: conf.get('serverBaseAddress')
+        SERVER_BASE_ADDRESS: conf.get('plantUmlServerBaseAddress')
     }
 };
 

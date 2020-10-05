@@ -263,10 +263,10 @@ module.exports = async (currentConfiguration, conf, program) => {
     if (!currentConfiguration.SERVER_BASE_ADDRESS || program.config) {
         responses = await inquirer.prompt({
             type: 'input',
-            name: 'serverBaseAddress',
+            name: 'plantUmlServerBaseAddress',
             message: 'Change server base address',
             default: currentConfiguration.SERVER_BASE_ADDRESS || 'https://www.plantuml.com/plantuml/'
         });
-        conf.set('serverBaseAddress', responses.serverBaseAddress);
+        conf.set('plantUmlServerBaseAddress', responses.plantUmlServerBaseAddress);
     }
 };

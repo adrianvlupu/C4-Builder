@@ -167,13 +167,24 @@ const generateCompleteMD = async (tree, options) => {
                 if (!options.GENERATE_LOCAL_IMAGES)
                     diagramUrl = plantUmlServerUrl(pumlFile.content);
 
-                let diagramImage = `![diagram](${diagramUrl})`;
-                let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
+                if (options.EMBED_SVG_DIAGRAM && options.DIAGRAM_FORMAT == "svg"){
+                    let svgContent = fs.readFileSync(
+                        path.join(
+                            options.DIST_FOLDER,
+                            item.dir.replace(options.ROOT_FOLDER, ''),
+                            `${path.parse(pumlFile.dir).name}.${options.DIAGRAM_FORMAT}`
+                    ), "utf8")
+                    MD += "\n\n<div>"+svgContent.replace(/(<!--.*?-->)|(<!--[\w\W\n\s]+?-->)/gm, "")+"</div>\n\n"
+                }else{
 
-                if (!options.INCLUDE_LINK_TO_DIAGRAM) //img
-                    MD += diagramImage;
-                else //link
-                    MD += diagramLink;
+                    let diagramImage = `![diagram](${diagramUrl})`;
+                    let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
+
+                    if (!options.INCLUDE_LINK_TO_DIAGRAM) //img
+                        MD += diagramImage;
+                    else //link
+                        MD += diagramLink;
+                }
             }
         };
 
@@ -524,16 +535,30 @@ const generateWebMD = async (tree, options) => {
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
                     diagramUrl = plantUmlServerUrl(pumlFile.content);
-
-                let diagramImage = `![diagram](${diagramUrl})`;
-                let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
-
-                if (!options.INCLUDE_LINK_TO_DIAGRAM) //img
-                    MD += diagramImage;
-                else if (options.INCLUDE_LINK_TO_DIAGRAM && options.GENERATE_LOCAL_IMAGES)
-                    MD += diagramImage;
-                else //link
+                    
+                
+                if (options.EMBED_SVG_DIAGRAM && options.DIAGRAM_FORMAT == "svg"){
+                    let svgContent = fs.readFileSync(
+                        path.join(
+                            options.DIST_FOLDER,
+                            item.dir.replace(options.ROOT_FOLDER, ''),
+                            `${path.parse(pumlFile.dir).name}.${options.DIAGRAM_FORMAT}`
+                            ), "utf8")
+                    MD += "\n\n<div>"+svgContent.replace(/(<!--.*?-->)|(<!--[\w\W\n\s]+?-->)/gm, "")+"</div>\n\n"
+                    
+                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    let diagramLink = `[Download ${path.parse(pumlFile.dir).name} diagram](${diagramUrl} ':ignore')`;
                     MD += diagramLink;
+                }else{
+
+                    let diagramImage = `![diagram](${diagramUrl})`;
+                    let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
+                    if (!options.INCLUDE_LINK_TO_DIAGRAM) //img
+                        MD += diagramImage;
+                    else //link
+                        MD += diagramLink;
+                }
+                
             }
         };
 

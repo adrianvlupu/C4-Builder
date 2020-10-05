@@ -5,3 +5,4 @@ template/.c4builder
 #intellij
 .idea
 *.iml
+*.tgz

@@ -159,18 +159,19 @@ const generateCompleteMD = async (tree, options) => {
             }
         };
         //add diagrams
-        const appendImages = () => {
+        const appendImages = async () => {
             for (const pumlFile of item.pumlFiles) {
                 MD += '\n\n';
+
                 let diagramUrl = encodeURIPath(path.join(
-                    '.',
-                    item.dir.replace(options.ROOT_FOLDER, ''),
+                    path.dirname(pumlFile.dir),
                     path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
                     diagramUrl = plantUmlServerUrl(pumlFile.content);
 
-                if (options.EMBED_SVG_DIAGRAM && options.DIAGRAM_FORMAT == "svg") {
+
+                if (options.EMBED_SVG_DIAGRAM && options.DIAGRAM_FORMAT == "svg"){
 
                     let svgContent = ""
                     if (options.GENERATE_LOCAL_IMAGES){
@@ -181,33 +182,33 @@ const generateCompleteMD = async (tree, options) => {
                                 `${path.parse(pumlFile.dir).name}.${options.DIAGRAM_FORMAT}`
                             ), "utf8")
                     }else{
-                        (async function(){
-                            const response = await superagent.get(diagramUrl)
-                            svgContent = response.text
-                        })();
-
+                        svgContent = await httpGet(diagramUrl)
                     }
-
                     MD += "\n\n<div>"+svgContent.replace(/(<!--.*?-->)|(<!--[\w\W\n\s]+?-->)/gm, "")+"</div>\n\n"
+
+                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    let diagramLink = `[Download ${path.parse(pumlFile.dir).name} diagram](${diagramUrl} ':ignore')`;
+                    MD += diagramLink;
+
                 }else{
 
                     let diagramImage = `![diagram](${diagramUrl})`;
                     let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
-
                     if (!options.INCLUDE_LINK_TO_DIAGRAM) //img
                         MD += diagramImage;
                     else //link
                         MD += diagramLink;
                 }
+
             }
         };
 
         if (options.DIAGRAMS_ON_TOP) {
-            appendImages();
+            await appendImages();
             appendText();
         } else {
             appendText();
-            appendImages();
+            await appendImages();
         }
     }
 
@@ -379,9 +380,10 @@ const generateMD = async (tree, options, onProgress) => {
             }
         };
         //add diagrams
-        const appendImages = () => {
+        const appendImages = async () => {
             for (const pumlFile of item.pumlFiles) {
                 MD += '\n\n';
+
                 let diagramUrl = encodeURIPath(path.join(
                     path.dirname(pumlFile.dir),
                     path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
@@ -389,22 +391,45 @@ const generateMD = async (tree, options, onProgress) => {
                 if (!options.GENERATE_LOCAL_IMAGES)
                     diagramUrl = plantUmlServerUrl(pumlFile.content);
 
-                let diagramImage = `![diagram](${diagramUrl})`;
-                let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
 
-                if (!options.INCLUDE_LINK_TO_DIAGRAM) //img
-                    MD += diagramImage;
-                else //link
+                if (options.EMBED_SVG_DIAGRAM && options.DIAGRAM_FORMAT == "svg"){
+
+                    let svgContent = ""
+                    if (options.GENERATE_LOCAL_IMAGES){
+                        svgContent = fs.readFileSync(
+                            path.join(
+                                options.DIST_FOLDER,
+                                item.dir.replace(options.ROOT_FOLDER, ''),
+                                `${path.parse(pumlFile.dir).name}.${options.DIAGRAM_FORMAT}`
+                            ), "utf8")
+                    }else{
+                        svgContent = await httpGet(diagramUrl)
+                    }
+                    MD += "\n\n<div>"+svgContent.replace(/(<!--.*?-->)|(<!--[\w\W\n\s]+?-->)/gm, "")+"</div>\n\n"
+
+                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    let diagramLink = `[Download ${path.parse(pumlFile.dir).name} diagram](${diagramUrl} ':ignore')`;
                     MD += diagramLink;
+
+                }else{
+
+                    let diagramImage = `![diagram](${diagramUrl})`;
+                    let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
+                    if (!options.INCLUDE_LINK_TO_DIAGRAM) //img
+                        MD += diagramImage;
+                    else //link
+                        MD += diagramLink;
+                }
+
             }
         };
 
         if (options.DIAGRAMS_ON_TOP) {
-            appendImages();
+            await appendImages();
             appendText();
         } else {
             appendText();
-            appendImages();
+            await appendImages();
         }
 
         //write to disk

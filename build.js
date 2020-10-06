@@ -185,6 +185,7 @@ const generateCompleteMD = async (tree, options) => {
                     else //link
                         MD += diagramLink;
                 }
+            }
         };
 
         if (options.DIAGRAMS_ON_TOP) {
@@ -554,7 +555,7 @@ const generateWebMD = async (tree, options) => {
                     let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
                     if (!options.INCLUDE_LINK_TO_DIAGRAM) //img
                         MD += diagramImage;
-                else if (options.INCLUDE_LINK_TO_DIAGRAM && options.GENERATE_LOCAL_IMAGES)
+                    else if (options.INCLUDE_LINK_TO_DIAGRAM && options.GENERATE_LOCAL_IMAGES)
                     MD += diagramImage;
                     else //link
                         MD += diagramLink;

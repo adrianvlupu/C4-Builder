@@ -165,7 +165,7 @@ const generateCompleteMD = async (tree, options) => {
                     path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    diagramUrl = plantUmlServerUrl(pumlFile.content, options);
 
                 if (options.EMBED_SVG_DIAGRAM && options.DIAGRAM_FORMAT == "svg"){
                     let svgContent = fs.readFileSync(
@@ -185,7 +185,6 @@ const generateCompleteMD = async (tree, options) => {
                     else //link
                         MD += diagramLink;
                 }
-            }
         };
 
         if (options.DIAGRAMS_ON_TOP) {
@@ -242,7 +241,7 @@ const generateCompletePDF = async (tree, options) => {
                     path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    diagramUrl = plantUmlServerUrl(pumlFile.content, options);
 
                 let diagramImage = `![diagram](${diagramUrl})`;
 
@@ -373,7 +372,7 @@ const generateMD = async (tree, options, onProgress) => {
                     path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    diagramUrl = plantUmlServerUrl(pumlFile.content, options);
 
                 let diagramImage = `![diagram](${diagramUrl})`;
                 let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
@@ -434,7 +433,7 @@ const generatePDF = async (tree, options, onProgress) => {
                 MD += '\n\n';
                 let diagramUrl = encodeURIPath(path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`);
                 if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    diagramUrl = plantUmlServerUrl(pumlFile.content, options);
 
                 let diagramImage = `![diagram](${diagramUrl})`;
 
@@ -534,9 +533,9 @@ const generateWebMD = async (tree, options) => {
                     path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
-                    
-                
+                    diagramUrl = plantUmlServerUrl(pumlFile.content, options);
+
+
                 if (options.EMBED_SVG_DIAGRAM && options.DIAGRAM_FORMAT == "svg"){
                     let svgContent = fs.readFileSync(
                         path.join(
@@ -545,7 +544,7 @@ const generateWebMD = async (tree, options) => {
                             `${path.parse(pumlFile.dir).name}.${options.DIAGRAM_FORMAT}`
                             ), "utf8")
                     MD += "\n\n<div>"+svgContent.replace(/(<!--.*?-->)|(<!--[\w\W\n\s]+?-->)/gm, "")+"</div>\n\n"
-                    
+
                     diagramUrl = plantUmlServerUrl(pumlFile.content);
                     let diagramLink = `[Download ${path.parse(pumlFile.dir).name} diagram](${diagramUrl} ':ignore')`;
                     MD += diagramLink;
@@ -555,10 +554,12 @@ const generateWebMD = async (tree, options) => {
                     let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
                     if (!options.INCLUDE_LINK_TO_DIAGRAM) //img
                         MD += diagramImage;
+                else if (options.INCLUDE_LINK_TO_DIAGRAM && options.GENERATE_LOCAL_IMAGES)
+                    MD += diagramImage;
                     else //link
                         MD += diagramLink;
                 }
-                
+
             }
         };
 
@@ -581,7 +582,7 @@ const generateWebMD = async (tree, options) => {
     if (options.DOCSIFY_TEMPLATE && options.DOCSIFY_TEMPLATE !== "" ){
         docsifyTemplate = require(path.join(process.cwd(), options.DOCSIFY_TEMPLATE));
     }
-    
+
     //docsify homepage
     filePromises.push(writeFile(path.join(
         options.DIST_FOLDER,

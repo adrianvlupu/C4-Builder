@@ -186,7 +186,7 @@ const generateCompleteMD = async (tree, options) => {
                     }
                     MD += "\n\n<div>"+svgContent.replace(/(<!--.*?-->)|(<!--[\w\W\n\s]+?-->)/gm, "")+"</div>\n\n"
 
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    diagramUrl = plantUmlServerUrl(pumlFile.content, options);
                     let diagramLink = `[Download ${path.parse(pumlFile.dir).name} diagram](${diagramUrl} ':ignore')`;
                     MD += diagramLink;
 
@@ -407,7 +407,7 @@ const generateMD = async (tree, options, onProgress) => {
                     }
                     MD += "\n\n<div>"+svgContent.replace(/(<!--.*?-->)|(<!--[\w\W\n\s]+?-->)/gm, "")+"</div>\n\n"
 
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    diagramUrl = plantUmlServerUrl(pumlFile.content,options);
                     let diagramLink = `[Download ${path.parse(pumlFile.dir).name} diagram](${diagramUrl} ':ignore')`;
                     MD += diagramLink;
 
@@ -614,7 +614,7 @@ const generateWebMD = async (tree, options) => {
                     }
                     MD += "\n\n<div>"+svgContent.replace(/(<!--.*?-->)|(<!--[\w\W\n\s]+?-->)/gm, "")+"</div>\n\n"
 
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    diagramUrl = plantUmlServerUrl(pumlFile.content,options);
                     let diagramLink = `[Download ${path.parse(pumlFile.dir).name} diagram](${diagramUrl} ':ignore')`;
                     MD += diagramLink;
 

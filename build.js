@@ -7,6 +7,8 @@ const fsextra = require('fs-extra');
 let docsifyTemplate = require('./docsify.template.js');
 const markdownpdf = require("md-to-pdf").mdToPdf;
 
+const http = require('http');
+
 const {
     encodeURIPath,
     makeDirectory,
@@ -21,6 +23,7 @@ const getFolderName = (dir, root, homepage) => {
 };
 
 const generateTree = async (dir, options) => {
+
     let tree = [];
 
     const build = async (dir, parent) => {
@@ -167,13 +170,24 @@ const generateCompleteMD = async (tree, options) => {
                 if (!options.GENERATE_LOCAL_IMAGES)
                     diagramUrl = plantUmlServerUrl(pumlFile.content, options);
 
-                if (options.EMBED_SVG_DIAGRAM && options.DIAGRAM_FORMAT == "svg"){
-                    let svgContent = fs.readFileSync(
-                        path.join(
-                            options.DIST_FOLDER,
-                            item.dir.replace(options.ROOT_FOLDER, ''),
-                            `${path.parse(pumlFile.dir).name}.${options.DIAGRAM_FORMAT}`
-                    ), "utf8")
+                if (options.EMBED_SVG_DIAGRAM && options.DIAGRAM_FORMAT == "svg") {
+
+                    let svgContent = ""
+                    if (options.GENERATE_LOCAL_IMAGES){
+                        svgContent = fs.readFileSync(
+                            path.join(
+                                options.DIST_FOLDER,
+                                item.dir.replace(options.ROOT_FOLDER, ''),
+                                `${path.parse(pumlFile.dir).name}.${options.DIAGRAM_FORMAT}`
+                            ), "utf8")
+                    }else{
+                        (async function(){
+                            const response = await superagent.get(diagramUrl)
+                            svgContent = response.text
+                        })();
+
+                    }
+
                     MD += "\n\n<div>"+svgContent.replace(/(<!--.*?-->)|(<!--[\w\W\n\s]+?-->)/gm, "")+"</div>\n\n"
                 }else{
 
@@ -505,6 +519,29 @@ const generatePDF = async (tree, options, onProgress) => {
     return Promise.all(filePromises);
 };
 
+const httpGet =  async (url) => {
+        // return new pending promise
+        return new Promise((resolve, reject) => {
+            // select http or https module, depending on reqested url
+            const lib = url.startsWith('https') ? require('https') : require('http');
+            const request = lib.get(url, (response) => {
+                // handle http errors
+                if (response.statusCode < 200 || response.statusCode > 299) {
+                    reject(new Error('Failed to load page '+url+', status code: ' + response.statusCode));
+                }
+                // temporary data holder
+                const body = [];
+                // on every content chunk, push it to the data array
+                response.on('data', (chunk) => body.push(chunk));
+                // we are done, resolve promise with those joined chunks
+                response.on('end', () => resolve(body.join('')));
+            });
+            // handle connection errors of the request
+            request.on('error', (err) => reject(err))
+        })
+
+}
+
 const generateWebMD = async (tree, options) => {
     let filePromises = [];
     let docsifySideBar = '';
@@ -525,7 +562,7 @@ const generateWebMD = async (tree, options) => {
             }
         };
         //add diagrams
-        const appendImages = () => {
+        const appendImages = async () => {
             for (const pumlFile of item.pumlFiles) {
                 MD += '\n\n';
 
@@ -538,17 +575,24 @@ const generateWebMD = async (tree, options) => {
 
 
                 if (options.EMBED_SVG_DIAGRAM && options.DIAGRAM_FORMAT == "svg"){
-                    let svgContent = fs.readFileSync(
-                        path.join(
-                            options.DIST_FOLDER,
-                            item.dir.replace(options.ROOT_FOLDER, ''),
-                            `${path.parse(pumlFile.dir).name}.${options.DIAGRAM_FORMAT}`
+
+                    let svgContent = ""
+                    if (options.GENERATE_LOCAL_IMAGES){
+                        svgContent = fs.readFileSync(
+                            path.join(
+                                options.DIST_FOLDER,
+                                item.dir.replace(options.ROOT_FOLDER, ''),
+                                `${path.parse(pumlFile.dir).name}.${options.DIAGRAM_FORMAT}`
                             ), "utf8")
+                    }else{
+                        svgContent = await httpGet(diagramUrl)
+                    }
                     MD += "\n\n<div>"+svgContent.replace(/(<!--.*?-->)|(<!--[\w\W\n\s]+?-->)/gm, "")+"</div>\n\n"
 
                     diagramUrl = plantUmlServerUrl(pumlFile.content);
                     let diagramLink = `[Download ${path.parse(pumlFile.dir).name} diagram](${diagramUrl} ':ignore')`;
                     MD += diagramLink;
+
                 }else{
 
                     let diagramImage = `![diagram](${diagramUrl})`;
@@ -565,11 +609,11 @@ const generateWebMD = async (tree, options) => {
         };
 
         if (options.DIAGRAMS_ON_TOP) {
-            appendImages();
+            await appendImages();
             appendText();
         } else {
             appendText();
-            appendImages();
+            await appendImages();
         }
 
         //write to disk

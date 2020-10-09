@@ -65,7 +65,7 @@ const generateTree = async (dir, options) => {
             const fileContents = await readFile(path.join(dir, pumlFile));
             item.pumlFiles.push({ dir: pumlFile, content: fileContents });
         }
-        item.sort(function (a, b) {
+        item.pumlFiles.sort(function (a, b) {
             return ('' + a.dir).localeCompare(b.dir);
         }) ;
 

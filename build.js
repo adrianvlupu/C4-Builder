@@ -65,6 +65,9 @@ const generateTree = async (dir, options) => {
             const fileContents = await readFile(path.join(dir, pumlFile));
             item.pumlFiles.push({ dir: pumlFile, content: fileContents });
         }
+        item.sort(function (a, b) {
+            return ('' + a.dir).localeCompare(b.dir);
+        }) ;
 
         //copy all other files
         const otherFiles = files.filter(x => ['.md', '.puml'].indexOf(path.extname(x).toLowerCase()) === -1);

@@ -68,7 +68,8 @@ const generateTree = async (dir, options) => {
         }) ;
 
         //copy all other files
-        const otherFiles = files.filter(x => ['.md', '.puml'].indexOf(path.extname(x).toLowerCase()) === -1);
+        files = fs.readdirSync(dir)
+        const otherFiles = files.filter(x => x.charAt(0) === '_' || ['.md', '.puml'].indexOf(path.extname(x).toLowerCase()) === -1);
         for (const otherFile of otherFiles) {
             if (fs.statSync(path.join(dir, otherFile)).isDirectory())
                 continue;
@@ -599,9 +600,9 @@ const generateWebMD = async (tree, options) => {
 
         if (options.DIAGRAMS_ON_TOP) {
             await appendImages();
-            appendText();
+            await appendText();
         } else {
-            appendText();
+            await appendText();
             await appendImages();
         }
 

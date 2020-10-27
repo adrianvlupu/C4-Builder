@@ -48,9 +48,10 @@ const getOptions = conf => {
         CHARSET: conf.get('charset'),
         WEB_PORT: conf.get('webPort'),
         HAS_RUN: conf.get('hasRun'),
+        PLANTUML_SERVER_URL: conf.get('plantumlServerUrl'),
+        DIAGRAM_FORMAT: conf.get('diagramFormat'),
         MD_FILE_NAME: 'README',
-        WEB_FILE_NAME: 'HOME',
-        DIAGRAM_FORMAT: 'svg'
+        WEB_FILE_NAME: 'HOME'
     }
 };
 

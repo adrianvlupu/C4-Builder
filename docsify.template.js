@@ -30,6 +30,7 @@ module.exports = options => {
       </script>
       <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
       <script src="//unpkg.com/docsify-plantuml/dist/docsify-plantuml.min.js"></script>
+      <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
     </body>
     
     </html>`;

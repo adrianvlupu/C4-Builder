@@ -154,6 +154,14 @@ module.exports = async (currentConfiguration, conf, program) => {
 
             webOptions = await inquirer.prompt({
                 type: 'input',
+                name: 'docsifyTemplate',
+                message: 'Path to a specific Docsify template?',
+                default: ''
+            });
+            conf.set('docsifyTemplate', webOptions.docsifyTemplate);
+
+            webOptions = await inquirer.prompt({
+                type: 'input',
                 name: 'webPort',
                 message: 'Change the default serve port?',
                 default: currentConfiguration.WEB_PORT || '3000'

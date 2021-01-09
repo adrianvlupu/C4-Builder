@@ -220,7 +220,9 @@ The project is still in it's early phase and I intend on using it on some actual
 
 # Change log
 
-## v0.2.8
+## v0.2.9
+
+Updated VSCode snippets and resolved npm audit issues
 
 Docsify image plugin [#20](https://github.com/adrianvlupu/C4-Builder/pull/20) ([alefcarlos](https://github.com/alefcarlos))
 

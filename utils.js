@@ -116,7 +116,7 @@ const urlTextFrom = (s) => {
     }
 };
 
-const plantUmlServerUrl = content => `https://www.plantuml.com/plantuml/svg/0/${urlTextFrom(content)}`;
+const plantUmlServerUrl = (baseURL, imageFormat, content) => `${baseURL}/${imageFormat}/0/${urlTextFrom(content)}`;
 
 const clearConsole = () => {
     process.stdout.write('\x1b[2J');

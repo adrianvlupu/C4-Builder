@@ -250,6 +250,28 @@ module.exports = async (currentConfiguration, conf, program) => {
         }
     }
 
+    if (!currentConfiguration.PLANTUML_SERVER_URL || program.config) {
+        responses = await inquirer.prompt({
+            type: 'input',
+            name: 'plantumlServerUrl',
+            message: 'PlantUML Server URL',
+            default: currentConfiguration.PLANTUML_SERVER_URL || 'https://www.plantuml.com/plantuml',
+            validate: validate(joi.string().trim().optional())
+        });
+        conf.set('plantumlServerUrl', responses.plantumlServerUrl)
+    }
+
+    if (!currentConfiguration.DIAGRAM_FORMAT || program.config) {
+        responses = await inquirer.prompt({
+            type: 'input',
+            name: 'diagramFormat',
+            message: 'Diagram Image Format',
+            default: currentConfiguration.DIAGRAM_FORMAT || 'svg',
+            validate: validate(joi.string().trim().optional())
+        });
+        conf.set('diagramFormat', responses.diagramFormat)
+    }    
+
     if (!currentConfiguration.CHARSET || program.config) {
         responses = await inquirer.prompt({
             type: 'input',

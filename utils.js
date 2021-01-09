@@ -128,8 +128,11 @@ const plantumlVersions = [{
     jar: 'plantuml-1.2019.9.jar'
 }, {
     version: '1.2020.07',
-    isLatest: true,
     jar: 'plantuml-1.2020.7.jar'
+}, {
+    version: '1.2020.17',
+    isLatest: true,
+    jar: 'plantuml.1.2020.17.jar'
 }];
 
 module.exports = {

@@ -116,7 +116,7 @@ const urlTextFrom = (s) => {
     }
 };
 
-const plantUmlServerUrl = content => `https://www.plantuml.com/plantuml/svg/0/${urlTextFrom(content)}`;
+const plantUmlServerUrl = (baseURL, imageFormat, content) => `${baseURL}/${imageFormat}/0/${urlTextFrom(content)}`;
 
 const clearConsole = () => {
     process.stdout.write('\x1b[2J');
@@ -128,8 +128,11 @@ const plantumlVersions = [{
     jar: 'plantuml-1.2019.9.jar'
 }, {
     version: '1.2020.07',
-    isLatest: true,
     jar: 'plantuml-1.2020.7.jar'
+}, {
+    version: '1.2020.17',
+    isLatest: true,
+    jar: 'plantuml.1.2020.17.jar'
 }];
 
 module.exports = {

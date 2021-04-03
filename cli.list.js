@@ -21,9 +21,10 @@ Generate a single complete pdf file: ${currentConfiguration.GENERATE_COMPLETE_PD
             : ''}
 Generate website: ${currentConfiguration.GENERATE_WEBSITE !== undefined ? chalk.green(currentConfiguration.GENERATE_WEBSITE) : chalk.red('not set')}
     ${currentConfiguration.GENERATE_WEBSITE ?
-            `Website docsify theme: ${currentConfiguration.WEB_THEME ? chalk.green(currentConfiguration.WEB_THEME) : chalk.red('not set')}`
+            `Website docsify theme: ${currentConfiguration.WEB_THEME ? chalk.green(currentConfiguration.WEB_THEME) : chalk.red('not set')}
+    Path to a specific Docsify template: ${currentConfiguration.DOCSIFY_TEMPLATE ? chalk.green(currentConfiguration.DOCSIFY_TEMPLATE) : chalk.red('not set')}`
             : ''}
-Repository Url: ${currentConfiguration.REPO_NAME ? chalk.green(currentConfiguration.REPO_NAME) : chalk.red('not set')}
+    Repository Url: ${currentConfiguration.REPO_NAME ? chalk.green(currentConfiguration.REPO_NAME) : chalk.red('not set')}
 Include breadcrumbs: ${currentConfiguration.INCLUDE_BREADCRUMBS !== undefined ? chalk.green(currentConfiguration.INCLUDE_BREADCRUMBS) : chalk.red('not set')}
 
 PlantUML version: ${currentConfiguration.PLANTUML_VERSION !== undefined ? chalk.green(currentConfiguration.PLANTUML_VERSION) : chalk.red('not set')}
@@ -32,6 +33,8 @@ Embed SVG diagram : ${currentConfiguration.EMBED_SVG_DIAGRAM !== undefined ? cha
 Generate diagram images locally: ${currentConfiguration.GENERATE_LOCAL_IMAGES !== undefined ? chalk.green(currentConfiguration.GENERATE_LOCAL_IMAGES) : chalk.red('not set')}
 Replace diagrams with a link: ${currentConfiguration.INCLUDE_LINK_TO_DIAGRAM !== undefined ? chalk.green(currentConfiguration.INCLUDE_LINK_TO_DIAGRAM) : chalk.red('not set')}
 Place diagrams before text: ${currentConfiguration.DIAGRAMS_ON_TOP !== undefined ? chalk.green(currentConfiguration.DIAGRAMS_ON_TOP) : chalk.red('not set')}
+PlantUML server url: ${currentConfiguration.PLANTUML_SERVER_URL !== undefined ? chalk.green(currentConfiguration.PLANTUML_SERVER_URL) : chalk.red('not set')}
+Diagram format: ${currentConfiguration.DIAGRAM_FORMAT !== undefined ? chalk.green(currentConfiguration.DIAGRAM_FORMAT) : chalk.red('not set')}
 Charset: ${currentConfiguration.CHARSET !== undefined ? chalk.green(currentConfiguration.CHARSET) : chalk.red('not set')}
 `);
     return;

@@ -40,6 +40,8 @@ cd project
 c4builder
 ```
 
+A sample project is available at [C4Builder-Demo](https://github.com/adrianvlupu/C4Builder-Demo/tree/master/docs).
+
 ## Available Commands
 
 ```bash
@@ -210,6 +212,12 @@ The current entity structure is inserted after the header
 
 If defined, this css is used in the generation of the pdf files.
 
+# GitHub Action
+
+Thanks to [hkdobrev](https://github.com/hkdobrev) for creating a GitHub Action for running C4 Builder in CI and generating a documentation website/PDF.
+
+[https://github.com/clippings/c4builder-action](https://github.com/clippings/c4builder-action)
+
 # Future plans
 
 I would like to bind the **build** phase to the C4 model. It could parse the diagrams and know what Person/System/Component/Container is related to what and help with additional validation. Maybe even export to [structurizr](https://structurizr.com/) or vice versa.
@@ -217,6 +225,20 @@ I would like to bind the **build** phase to the C4 model. It could parse the dia
 The project is still in it's early phase and I intend on using it on some actual projects in order to find more use cases and fix bugs.
 
 # Change log
+
+## v0.2.9
+
+Updated VSCode snippets and resolved npm audit issues
+
+Docsify image plugin [#20](https://github.com/adrianvlupu/C4-Builder/pull/20) ([alefcarlos](https://github.com/alefcarlos))
+
+PlantUML 1.2020.17 [#23](https://github.com/adrianvlupu/C4-Builder/pull/23) ([RohanTalip](https://github.com/RohanTalip))
+
+Configurable PlantUML Server url [#25](https://github.com/adrianvlupu/C4-Builder/pull/25) ([jikuja](https://github.com/jikuja)), [#29](https://github.com/adrianvlupu/C4-Builder/pull/29) ([coryodaniel](https://github.com/coryodaniel))
+
+GitHub Action for running C4 Builder in CI [#16](https://github.com/adrianvlupu/C4-Builder/issues/16) ([hkdobrev](https://github.com/hkdobrev))
+
+Overloading the docsify template [#27](https://github.com/adrianvlupu/C4-Builder/pull/27) ([sju66](https://github.com/sju66))
 
 ## v0.2.7
 

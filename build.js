@@ -4,7 +4,7 @@ const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 const fsextra = require('fs-extra');
-const docsifyTemplate = require('./docsify.template.js');
+let docsifyTemplate = require('./docsify.template.js');
 const markdownpdf = require("md-to-pdf").mdToPdf;
 
 const http = require('http');
@@ -171,7 +171,7 @@ const generateCompleteMD = async (tree, options) => {
                     path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    diagramUrl = plantUmlServerUrl(options.PLANTUML_SERVER_URL, options.DIAGRAM_FORMAT, pumlFile.content);
 
 
                 if (options.EMBED_SVG_DIAGRAM && options.DIAGRAM_FORMAT == "svg"){
@@ -260,7 +260,7 @@ const generateCompletePDF = async (tree, options) => {
                     path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    diagramUrl = plantUmlServerUrl(options.PLANTUML_SERVER_URL, options.DIAGRAM_FORMAT, pumlFile.content);
 
                 let diagramImage = `![diagram](${diagramUrl})`;
 
@@ -392,7 +392,7 @@ const generateMD = async (tree, options, onProgress) => {
                     path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    diagramUrl = plantUmlServerUrl(options.PLANTUML_SERVER_URL, options.DIAGRAM_FORMAT, pumlFile.content);
 
 
                 if (options.EMBED_SVG_DIAGRAM && options.DIAGRAM_FORMAT == "svg"){
@@ -476,7 +476,7 @@ const generatePDF = async (tree, options, onProgress) => {
                 MD += '\n\n';
                 let diagramUrl = encodeURIPath(path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`);
                 if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    diagramUrl = plantUmlServerUrl(options.PLANTUML_SERVER_URL, options.DIAGRAM_FORMAT, pumlFile.content);
 
                 let diagramImage = `![diagram](${diagramUrl})`;
 
@@ -650,6 +650,10 @@ const generateWebMD = async (tree, options) => {
         ), MD));
     }
 
+    if (options.DOCSIFY_TEMPLATE && options.DOCSIFY_TEMPLATE !== "" ){
+        docsifyTemplate = require(path.join(process.cwd(), options.DOCSIFY_TEMPLATE));
+    }
+    
     //docsify homepage
     filePromises.push(writeFile(path.join(
         options.DIST_FOLDER,

@@ -154,6 +154,14 @@ module.exports = async (currentConfiguration, conf, program) => {
 
             webOptions = await inquirer.prompt({
                 type: 'input',
+                name: 'docsifyTemplate',
+                message: 'Path to a specific Docsify template?',
+                default: ''
+            });
+            conf.set('docsifyTemplate', webOptions.docsifyTemplate);
+
+            webOptions = await inquirer.prompt({
+                type: 'input',
                 name: 'webPort',
                 message: 'Change the default serve port?',
                 default: currentConfiguration.WEB_PORT || '3000'
@@ -257,6 +265,28 @@ module.exports = async (currentConfiguration, conf, program) => {
             conf.set('generateLocalImages', true);
         }
     }
+
+    if (!currentConfiguration.PLANTUML_SERVER_URL || program.config) {
+        responses = await inquirer.prompt({
+            type: 'input',
+            name: 'plantumlServerUrl',
+            message: 'PlantUML Server URL',
+            default: currentConfiguration.PLANTUML_SERVER_URL || 'https://www.plantuml.com/plantuml',
+            validate: validate(joi.string().trim().optional())
+        });
+        conf.set('plantumlServerUrl', responses.plantumlServerUrl)
+    }
+
+    if (!currentConfiguration.DIAGRAM_FORMAT || program.config) {
+        responses = await inquirer.prompt({
+            type: 'input',
+            name: 'diagramFormat',
+            message: 'Diagram Image Format',
+            default: currentConfiguration.DIAGRAM_FORMAT || 'svg',
+            validate: validate(joi.string().trim().optional())
+        });
+        conf.set('diagramFormat', responses.diagramFormat)
+    }    
 
     if (!currentConfiguration.CHARSET || program.config) {
         responses = await inquirer.prompt({

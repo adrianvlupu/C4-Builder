@@ -18,6 +18,34 @@ const {
     plantumlVersions
 } = require('./utils.js');
 
+const getMime = (format) => {
+    if (format == 'svg')
+        return `image/svg+xml`
+    return `image/${format}`;
+};
+
+const httpGet = async (url) => {
+    // return new pending promise
+    return new Promise((resolve, reject) => {
+        // select http or https module, depending on reqested url
+        const lib = url.startsWith('https') ? require('https') : require('http');
+        const request = lib.get(url, (response) => {
+            // handle http errors
+            if (response.statusCode < 200 || response.statusCode > 299) {
+                reject(new Error('Failed to load page ' + url + ', status code: ' + response.statusCode));
+            }
+            // temporary data holder
+            const body = [];
+            // on every content chunk, push it to the data array
+            response.on('data', (chunk) => body.push(chunk));
+            // we are done, resolve promise with those joined chunks
+            response.on('end', () => resolve((Buffer.concat(body)).toString('base64')));
+        });
+        // handle connection errors of the request
+        request.on('error', (err) => reject(err));
+    });
+};
+
 const getFolderName = (dir, root, homepage) => {
     return dir === root ? homepage : path.parse(dir).base;
 };
@@ -67,7 +95,7 @@ const generateTree = async (dir, options) => {
         }
         item.pumlFiles.sort(function (a, b) {
             return ('' + a.dir).localeCompare(b.dir);
-        }) ;
+        });
 
         //copy all other files
         const otherFiles = files.filter(x => ['.md', '.puml'].indexOf(path.extname(x).toLowerCase()) === -1);
@@ -173,30 +201,31 @@ const generateCompleteMD = async (tree, options) => {
                 if (!options.GENERATE_LOCAL_IMAGES)
                     diagramUrl = plantUmlServerUrl(options.PLANTUML_SERVER_URL, options.DIAGRAM_FORMAT, pumlFile.content);
 
-
-                if (options.EMBED_SVG_DIAGRAM && options.DIAGRAM_FORMAT == "svg"){
-
-                    let svgContent = ""
-                    if (options.GENERATE_LOCAL_IMAGES){
-                        svgContent = fs.readFileSync(
+                if (options.EMBED_DIAGRAM) {
+                    let imgContent = "";
+                    if (options.GENERATE_LOCAL_IMAGES)
+                        imgContent = (await readFile(
                             path.join(
                                 options.DIST_FOLDER,
                                 item.dir.replace(options.ROOT_FOLDER, ''),
-                                `${path.parse(pumlFile.dir).name}.${options.DIAGRAM_FORMAT}`
-                            ), "utf8")
-                    }else{
-                        svgContent = await httpGet(diagramUrl)
-                    }
-                    MD += "\n\n<div>"+svgContent.replace(/(<!--.*?-->)|(<!--[\w\W\n\s]+?-->)/gm, "")+"</div>\n\n"
+                                diagramUrl
+                            ))).toString('base64');
+                    else
+                        imgContent = await httpGet(diagramUrl);
 
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
-                    let diagramLink = `[Download ${path.parse(pumlFile.dir).name} diagram](${diagramUrl} ':ignore')`;
+                    MD += `\n![${path.parse(pumlFile.dir).name}](data:${getMime(options.DIAGRAM_FORMAT)};base64,${imgContent})\n`;
+
+                    let diagramLink = `\n[Download ${path.parse(pumlFile.dir).name} diagram](${encodeURIPath(path.join(
+                        item.dir.replace(options.ROOT_FOLDER, ''),
+                        diagramUrl
+                    ))} ':ignore')`;
                     MD += diagramLink;
-
-                }else{
-
+                } else {
                     let diagramImage = `![diagram](${diagramUrl})`;
-                    let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
+                    let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${encodeURIPath(path.join(
+                        item.dir.replace(options.ROOT_FOLDER, ''),
+                        diagramUrl
+                    ))})`;
                     if (!options.INCLUDE_LINK_TO_DIAGRAM) //img
                         MD += diagramImage;
                     else //link
@@ -394,27 +423,24 @@ const generateMD = async (tree, options, onProgress) => {
                 if (!options.GENERATE_LOCAL_IMAGES)
                     diagramUrl = plantUmlServerUrl(options.PLANTUML_SERVER_URL, options.DIAGRAM_FORMAT, pumlFile.content);
 
-
-                if (options.EMBED_SVG_DIAGRAM && options.DIAGRAM_FORMAT == "svg"){
-
-                    let svgContent = ""
-                    if (options.GENERATE_LOCAL_IMAGES){
-                        svgContent = fs.readFileSync(
+                if (options.EMBED_DIAGRAM) {
+                    let imgContent = "";
+                    if (options.GENERATE_LOCAL_IMAGES)
+                        imgContent = (await readFile(
                             path.join(
                                 options.DIST_FOLDER,
                                 item.dir.replace(options.ROOT_FOLDER, ''),
-                                `${path.parse(pumlFile.dir).name}.${options.DIAGRAM_FORMAT}`
-                            ), "utf8")
-                    }else{
-                        svgContent = await httpGet(diagramUrl)
-                    }
-                    MD += "\n\n<div>"+svgContent.replace(/(<!--.*?-->)|(<!--[\w\W\n\s]+?-->)/gm, "")+"</div>\n\n"
+                                diagramUrl
+                            ))).toString('base64');
+                    else
+                        imgContent = await httpGet(diagramUrl);
 
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    MD += `\n![${path.parse(pumlFile.dir).name}](data:${getMime(options.DIAGRAM_FORMAT)};base64,${imgContent})\n`;
+
                     let diagramLink = `[Download ${path.parse(pumlFile.dir).name} diagram](${diagramUrl} ':ignore')`;
                     MD += diagramLink;
 
-                }else{
+                } else {
 
                     let diagramImage = `![diagram](${diagramUrl})`;
                     let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
@@ -547,29 +573,6 @@ const generatePDF = async (tree, options, onProgress) => {
     return Promise.all(filePromises);
 };
 
-const httpGet =  async (url) => {
-        // return new pending promise
-        return new Promise((resolve, reject) => {
-            // select http or https module, depending on reqested url
-            const lib = url.startsWith('https') ? require('https') : require('http');
-            const request = lib.get(url, (response) => {
-                // handle http errors
-                if (response.statusCode < 200 || response.statusCode > 299) {
-                    reject(new Error('Failed to load page '+url+', status code: ' + response.statusCode));
-                }
-                // temporary data holder
-                const body = [];
-                // on every content chunk, push it to the data array
-                response.on('data', (chunk) => body.push(chunk));
-                // we are done, resolve promise with those joined chunks
-                response.on('end', () => resolve(body.join('')));
-            });
-            // handle connection errors of the request
-            request.on('error', (err) => reject(err))
-        })
-
-}
-
 const generateWebMD = async (tree, options) => {
     let filePromises = [];
     let docsifySideBar = '';
@@ -599,30 +602,26 @@ const generateWebMD = async (tree, options) => {
                     path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
                 ));
                 if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
-                    
-                
-                if (options.EMBED_SVG_DIAGRAM && options.DIAGRAM_FORMAT == "svg"){
+                    diagramUrl = plantUmlServerUrl(options.PLANTUML_SERVER_URL, options.DIAGRAM_FORMAT, pumlFile.content);
 
-                    let svgContent = ""
-                    if (options.GENERATE_LOCAL_IMAGES){
-                        svgContent = fs.readFileSync(
+                if (options.EMBED_DIAGRAM) {
+                    let imgContent = "";
+                    if (options.GENERATE_LOCAL_IMAGES)
+                        imgContent = (await readFile(
                             path.join(
                                 options.DIST_FOLDER,
                                 item.dir.replace(options.ROOT_FOLDER, ''),
-                                `${path.parse(pumlFile.dir).name}.${options.DIAGRAM_FORMAT}`
-                            ), "utf8")
-                    }else{
-                        svgContent = await httpGet(diagramUrl)
-                    }
-                    MD += "\n\n<div>"+svgContent.replace(/(<!--.*?-->)|(<!--[\w\W\n\s]+?-->)/gm, "")+"</div>\n\n"
+                                diagramUrl
+                            ))).toString('base64');
+                    else
+                        imgContent = await httpGet(diagramUrl);
 
-                    diagramUrl = plantUmlServerUrl(pumlFile.content);
+                    MD += `\n![${path.parse(pumlFile.dir).name}](data:${getMime(options.DIAGRAM_FORMAT)};base64,${imgContent})\n`;
+
                     let diagramLink = `[Download ${path.parse(pumlFile.dir).name} diagram](${diagramUrl} ':ignore')`;
                     MD += diagramLink;
 
-                }else{
-
+                } else {
                     let diagramImage = `![diagram](${diagramUrl})`;
                     let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
                     if (!options.INCLUDE_LINK_TO_DIAGRAM) //img
@@ -630,7 +629,6 @@ const generateWebMD = async (tree, options) => {
                     else //link
                         MD += diagramLink;
                 }
-                
             }
         };
 
@@ -650,10 +648,10 @@ const generateWebMD = async (tree, options) => {
         ), MD));
     }
 
-    if (options.DOCSIFY_TEMPLATE && options.DOCSIFY_TEMPLATE !== "" ){
+    if (options.DOCSIFY_TEMPLATE && options.DOCSIFY_TEMPLATE !== "") {
         docsifyTemplate = require(path.join(process.cwd(), options.DOCSIFY_TEMPLATE));
     }
-    
+
     //docsify homepage
     filePromises.push(writeFile(path.join(
         options.DIST_FOLDER,

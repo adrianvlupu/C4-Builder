@@ -218,7 +218,7 @@ module.exports = async (currentConfiguration, conf, program) => {
     }
 
     if (currentConfiguration.GENERATE_LOCAL_IMAGES === undefined ||
-        currentConfiguration.EMBED_SVG_DIAGRAM === undefined ||
+        currentConfiguration.EMBED_DIAGRAM === undefined ||
         currentConfiguration.INCLUDE_BREADCRUMBS === undefined || 
         currentConfiguration.INCLUDE_LINK_TO_DIAGRAM === undefined || 
         program.config) {
@@ -227,7 +227,7 @@ module.exports = async (currentConfiguration, conf, program) => {
             currentConfiguration.GENERATE_LOCAL_IMAGES === undefined ? null : currentConfiguration.GENERATE_LOCAL_IMAGES ? 'generateLocalImages' : null,
             currentConfiguration.INCLUDE_LINK_TO_DIAGRAM === undefined ? null : currentConfiguration.INCLUDE_LINK_TO_DIAGRAM ? 'includeLinkToDiagram' : null,
             currentConfiguration.DIAGRAMS_ON_TOP === undefined ? 'diagramsOnTop' : currentConfiguration.DIAGRAMS_ON_TOP ? 'diagramsOnTop' : null,
-            currentConfiguration.EMBED_SVG_DIAGRAM === undefined ? 'embedSvgDiagram' : currentConfiguration.EMBED_SVG_DIAGRAM ? 'embedSvgDiagram' : null
+            currentConfiguration.EMBED_DIAGRAM === undefined ? null : currentConfiguration.EMBED_DIAGRAM ? 'embedDiagram' : null
         ];
         let choices = [{
             name: 'Include breadcrumbs',
@@ -240,7 +240,7 @@ module.exports = async (currentConfiguration, conf, program) => {
             value: 'diagramsOnTop'
         }, {
             name: 'Embed SVG Diagram',
-            value: 'embedSvgDiagram'
+            value: 'embedDiagram'
         }];
         if (ver.isLatest)
             choices.push({
@@ -258,7 +258,7 @@ module.exports = async (currentConfiguration, conf, program) => {
         conf.set('includeBreadcrumbs', !!responses.generate.find(x => x === 'includeBreadcrumbs'));
         conf.set('includeLinkToDiagram', !!responses.generate.find(x => x === 'includeLinkToDiagram'));
         conf.set('diagramsOnTop', !!responses.generate.find(x => x === 'diagramsOnTop'));
-        conf.set('embedSvgDiagram', !!responses.generate.find(x => x === 'embedSvgDiagram'));
+        conf.set('embedDiagram', !!responses.generate.find(x => x === 'embedDiagram'));
         if (ver.isLatest) {
             conf.set('generateLocalImages', !!responses.generate.find(x => x === 'generateLocalImages'));
         } else {

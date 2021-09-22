@@ -147,7 +147,7 @@ const generateImages = async (tree, options, onImageGenerated) => {
             const plantuml = require('node-plantuml');
 
             plantuml
-                .generate(path.join(item.dir, pumlFile), { format: options.DIAGRAM_FORMAT, charset: options.CHARSET })
+                .generate(path.join(item.dir, pumlFile), { format: options.DIAGRAM_FORMAT, charset: options.CHARSET, include: item.dir })
                 .out
                 .pipe(stream);
 

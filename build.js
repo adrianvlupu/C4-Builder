@@ -116,10 +116,14 @@ const generateTree = async (dir, options) => {
 };
 
 const generateImages = async (tree, options, onImageGenerated) => {
-    let imagePromises = [];
     let totalImages = 0;
     let processedImages = 0;
 
+    for (const item of tree) {
+        let files = fs.readdirSync(item.dir).filter(x => x.charAt(0) !== '_');
+        const pumlFiles = files.filter(x => path.extname(x).toLowerCase() === '.puml');
+        totalImages += pumlFiles.length;
+    }
     for (const item of tree) {
         let files = fs.readdirSync(item.dir).filter(x => x.charAt(0) !== '_');
         const pumlFiles = files.filter(x => path.extname(x).toLowerCase() === '.puml');
@@ -147,17 +151,12 @@ const generateImages = async (tree, options, onImageGenerated) => {
                 .out
                 .pipe(stream);
 
-            totalImages++;
-
-            imagePromises.push(new Promise(resolve => stream.on('finish', resolve)).then(() => {
-                processedImages++;
-                if (onImageGenerated)
-                    onImageGenerated(processedImages, totalImages);
-            }));
+            await new Promise(resolve => stream.on('finish', resolve));
+            processedImages++;
+            if (onImageGenerated)
+                onImageGenerated(processedImages, totalImages);
         }
     }
-
-    return Promise.all(imagePromises);
 };
 
 const generateCompleteMD = async (tree, options) => {

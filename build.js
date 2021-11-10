@@ -350,7 +350,7 @@ const generateCompletePDF = async (tree, options) => {
 
 const generateMD = async (tree, options, onProgress) => {
     let processedCount = 0;
-    let totalCount = 0;
+    let totalCount = tree.length;
 
     let filePromises = [];
     for (const item of tree) {
@@ -461,7 +461,6 @@ const generateMD = async (tree, options, onProgress) => {
         }
 
         //write to disk
-        totalCount++;
         filePromises.push(writeFile(path.join(
             options.DIST_FOLDER,
             item.dir.replace(options.ROOT_FOLDER, ''),
@@ -478,7 +477,7 @@ const generateMD = async (tree, options, onProgress) => {
 
 const generatePDF = async (tree, options, onProgress) => {
     let processedCount = 0;
-    let totalCount = 0;
+    let totalCount = tree.length;
 
     let filePromises = [];
     for (const item of tree) {
@@ -517,7 +516,6 @@ const generatePDF = async (tree, options, onProgress) => {
             appendImages();
         }
 
-        totalCount++;
         //write temp file
         filePromises.push(writeFile(path.join(
             options.DIST_FOLDER,

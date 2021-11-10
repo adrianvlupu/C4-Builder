@@ -242,6 +242,14 @@ GitHub Action for running C4 Builder in CI [#16](https://github.com/adrianvlupu/
 
 Overloading the docsify template [#27](https://github.com/adrianvlupu/C4-Builder/pull/27) ([sju66](https://github.com/sju66))
 
+## v0.2.12
+
+Relative urls in TOC for multiple markdown files [#9](https://github.com/adrianvlupu/C4-Builder/issues/5).
+
+Fixed Processed 1/1..2/2 files bug.
+
+Added another version of the PlantUML jar file.
+
 ## v0.2.7
 
 Resolved npm audit issues

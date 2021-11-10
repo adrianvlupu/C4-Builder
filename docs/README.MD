@@ -226,6 +226,14 @@ The project is still in it's early phase and I intend on using it on some actual
 
 # Change log
 
+## v0.2.12
+
+Relative urls in TOC for multiple markdown files [#9](https://github.com/adrianvlupu/C4-Builder/issues/5).
+
+Fixed Processed 1/1..2/2 files bug.
+
+Added another version of the PlantUML jar file.
+
 ## v0.2.11
 
 Updated latest plantuml jar to 1.2021.7.jar [#41](https://github.com/adrianvlupu/C4-Builder/pull/41) ([pandasuit](https://github.com/pandasuit))

@@ -364,13 +364,16 @@ const generateMD = async (tree, options, onProgress) => {
         if (options.INCLUDE_TABLE_OF_CONTENTS) {
             let tableOfContents = '';
             for (const _item of tree) {
+                let isDown = item.level < _item.level;
                 let label = `${item.dir === _item.dir ? '**' : ''}${_item.name}${item.dir === _item.dir ? '**' : ''}`
                 tableOfContents += `${'  '.repeat(_item.level - 1)}* [${label}](${encodeURIPath(path.join(
-                    '/',
-                    options.DIST_FOLDER,
+                    // '/',
+                    // options.DIST_FOLDER,
+                    './',
+                    item.level - 1 > 0 ? '../'.repeat(item.level - 1) : '',
                     _item.dir.replace(options.ROOT_FOLDER, ''),
                     `${options.MD_FILE_NAME}.md`
-                ))})\n`;
+                ))})\n`; //slice 1 if root and down
             }
             MD += `\n\n${tableOfContents}\n---`;
         }
@@ -378,8 +381,10 @@ const generateMD = async (tree, options, onProgress) => {
         if (item.parent && options.INCLUDE_NAVIGATION) {
             let parentName = getFolderName(item.parent, options.ROOT_FOLDER, options.HOMEPAGE_NAME);
             MD += `\n\n[${parentName} (up)](${encodeURIPath(path.join(
-                '/',
-                options.DIST_FOLDER,
+                // '/',
+                // options.DIST_FOLDER,
+                './',
+                item.level - 1 > 0 ? '../'.repeat(item.level - 1) : '',
                 item.parent.replace(options.ROOT_FOLDER, ''),
                 `${options.MD_FILE_NAME}.md`
             ))})`;
@@ -389,8 +394,10 @@ const generateMD = async (tree, options, onProgress) => {
         let descendantsMenu = '';
         for (const file of item.descendants) {
             descendantsMenu += `\n\n- [${file}](${encodeURIPath(path.join(
-                '/',
-                options.DIST_FOLDER,
+                // '/',
+                // options.DIST_FOLDER,
+                './',
+                item.level - 1 > 0 ? '../'.repeat(item.level - 1) : '',
                 item.dir.replace(options.ROOT_FOLDER, ''),
                 file,
                 `${options.MD_FILE_NAME}.md`

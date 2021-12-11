@@ -689,7 +689,6 @@ const generateWebMD = async (tree, options) => {
 };
 
 const build = async (options) => {
-    console.log("🚀 ~ options di build: ", options)
     let start_date = new Date();
 
     //clear dist directory

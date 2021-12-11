@@ -669,7 +669,8 @@ const generateWebMD = async (tree, options) => {
         plantuml: {
             skin: 'classic'
         },
-        stylesheet: options.WEB_THEME
+        stylesheet: options.WEB_THEME,
+        supportSearch: options.SUPPORT_SEARCH
     })));
 
     //github pages preparation
@@ -688,6 +689,7 @@ const generateWebMD = async (tree, options) => {
 };
 
 const build = async (options) => {
+    console.log("🚀 ~ options di build: ", options)
     let start_date = new Date();
 
     //clear dist directory

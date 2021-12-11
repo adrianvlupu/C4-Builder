@@ -146,6 +146,14 @@ module.exports = async (currentConfiguration, conf, program) => {
 
             webOptions = await inquirer.prompt({
                 type: 'input',
+                name: 'supportSearch',
+                message: 'Support search on navbar?',
+                default: true,
+            });
+            conf.set('supportSearch', webOptions.supportSearch);
+
+            webOptions = await inquirer.prompt({
+                type: 'input',
                 name: 'repoUrl',
                 message: 'Include a repository url?',
                 default: currentConfiguration.REPO_NAME

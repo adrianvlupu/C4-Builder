@@ -36,7 +36,7 @@
     "fs-extra": "^7.0.1",
     "inquirer": "^6.3.1",
     "joi": "^14.3.1",
-    "md-to-pdf": "^3.0.1",
+    "md-to-pdf": "^5.0.0",
     "node-plantuml": "^0.9.0",
     "node-watch": "^0.6.3",
     "update-notifier": "^3.0.1",

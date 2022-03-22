@@ -9,7 +9,7 @@
 //     },
 //     stylesheet: ''
 //   }
-module.exports = options => {
+module.exports = (options) => {
   return `<!DOCTYPE html>
     <html lang="en">
     

@@ -47,5 +47,7 @@ ${chalk.cyan('Include breadcrumbs')}
 Shows the original folder hierarchy after each title.
 ${chalk.cyan('Place diagrams before text')}
 Choose to place diagrams before or after the text.
+${chalk.cyan('Use external PlantUML server')}
+Change the PlantUML server.
     `);
 };

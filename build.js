@@ -555,6 +555,7 @@ const generateWebMD = async (tree, options) => {
           skin: 'classic',
         },
         stylesheet: options.WEB_THEME,
+		alias: {'/.*/_sidebar.md': '/_sidebar.md'},
       })
     )
   );

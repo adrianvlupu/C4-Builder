@@ -3,12 +3,10 @@ const joi = require('joi');
 const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
-const {
-    plantumlVersions
-} = require('./utils')
+const { plantumlVersions } = require('./utils');
 
-const validate = (schema) => answers => {
-    return !(joi.validate(answers, schema).error);
+const validate = (schema) => (answers) => {
+    return !joi.validate(answers, schema).error;
 };
 
 module.exports = async (currentConfiguration, conf, program) => {
@@ -40,16 +38,14 @@ module.exports = async (currentConfiguration, conf, program) => {
             name: 'rootFolder',
             message: 'Root documentation folder',
             default: currentConfiguration.ROOT_FOLDER || 'src',
-            validate: answers => {
+            validate: (answers) => {
                 let isValid = validate(joi.string().trim().optional())(answers);
                 if (isValid) {
-                    if (answers.indexOf('/') !== -1 || answers.indexOf('\\') !== -1)
-                        return false;
+                    if (answers.indexOf('/') !== -1 || answers.indexOf('\\') !== -1) return false;
 
                     //check it's an actual folder
                     let isDirectory = fs.statSync(path.join(process.cwd(), answers)).isDirectory();
-                    if (isDirectory)
-                        return true;
+                    if (isDirectory) return true;
                 }
                 return false;
             }
@@ -63,11 +59,10 @@ module.exports = async (currentConfiguration, conf, program) => {
             name: 'distFolder',
             message: 'Destination folder',
             default: currentConfiguration.DIST_FOLDER || 'docs',
-            validate: answers => {
+            validate: (answers) => {
                 let isValid = validate(joi.string().trim().optional());
                 if (isValid) {
-                    if (answers.indexOf('/') !== -1 || answers.indexOf('\\') !== -1)
-                        return false;
+                    if (answers.indexOf('/') !== -1 || answers.indexOf('\\') !== -1) return false;
                     return true;
                 }
                 return false;
@@ -76,16 +71,40 @@ module.exports = async (currentConfiguration, conf, program) => {
         conf.set('distFolder', responses.distFolder);
     }
 
-    if (currentConfiguration.GENERATE_MD === undefined || currentConfiguration.GENERATE_COMPLETE_MD_FILE === undefined ||
-        currentConfiguration.GENERATE_PDF === undefined || currentConfiguration.GENERATE_COMPLETE_PDF_FILE === undefined ||
-        currentConfiguration.GENERATE_WEBSITE === undefined || program.config) {
-
+    if (
+        currentConfiguration.GENERATE_MD === undefined ||
+        currentConfiguration.GENERATE_COMPLETE_MD_FILE === undefined ||
+        currentConfiguration.GENERATE_PDF === undefined ||
+        currentConfiguration.GENERATE_COMPLETE_PDF_FILE === undefined ||
+        currentConfiguration.GENERATE_WEBSITE === undefined ||
+        program.config
+    ) {
         let defaults = [
-            currentConfiguration.GENERATE_MD === undefined ? null : currentConfiguration.GENERATE_MD ? 'generateMD' : null,
-            currentConfiguration.GENERATE_PDF === undefined ? 'generatePDF' : currentConfiguration.GENERATE_PDF ? 'generatePDF' : null,
-            currentConfiguration.GENERATE_COMPLETE_MD_FILE === undefined ? null : currentConfiguration.GENERATE_COMPLETE_MD_FILE ? 'generateCompleteMD' : null,
-            currentConfiguration.GENERATE_COMPLETE_PDF_FILE === undefined ? 'generateCompletePDF' : currentConfiguration.GENERATE_COMPLETE_PDF_FILE ? 'generateCompletePDF' : null,
-            currentConfiguration.GENERATE_WEBSITE === undefined ? 'generateWEB' : currentConfiguration.GENERATE_WEBSITE ? 'generateWEB' : null
+            currentConfiguration.GENERATE_MD === undefined
+                ? null
+                : currentConfiguration.GENERATE_MD
+                ? 'generateMD'
+                : null,
+            currentConfiguration.GENERATE_PDF === undefined
+                ? 'generatePDF'
+                : currentConfiguration.GENERATE_PDF
+                ? 'generatePDF'
+                : null,
+            currentConfiguration.GENERATE_COMPLETE_MD_FILE === undefined
+                ? null
+                : currentConfiguration.GENERATE_COMPLETE_MD_FILE
+                ? 'generateCompleteMD'
+                : null,
+            currentConfiguration.GENERATE_COMPLETE_PDF_FILE === undefined
+                ? 'generateCompletePDF'
+                : currentConfiguration.GENERATE_COMPLETE_PDF_FILE
+                ? 'generateCompletePDF'
+                : null,
+            currentConfiguration.GENERATE_WEBSITE === undefined
+                ? 'generateWEB'
+                : currentConfiguration.GENERATE_WEBSITE
+                ? 'generateWEB'
+                : null
         ];
 
         responses = await inquirer.prompt({
@@ -93,36 +112,45 @@ module.exports = async (currentConfiguration, conf, program) => {
             name: 'generate',
             message: 'Compilation format:',
             default: defaults,
-            choices: [{
-                name: 'Multiple markdown files',
-                value: 'generateMD'
-            }, {
-                name: 'Generate a single complete markdown file',
-                value: 'generateCompleteMD'
-            }, {
-                name: 'Generate multiple pdf files',
-                value: 'generatePDF'
-            }, {
-                name: 'Generate a single complete pdf file',
-                value: 'generateCompletePDF'
-            }, {
-                name: 'Generate website',
-                value: 'generateWEB'
-            }]
+            choices: [
+                {
+                    name: 'Multiple markdown files',
+                    value: 'generateMD'
+                },
+                {
+                    name: 'Generate a single complete markdown file',
+                    value: 'generateCompleteMD'
+                },
+                {
+                    name: 'Generate multiple pdf files',
+                    value: 'generatePDF'
+                },
+                {
+                    name: 'Generate a single complete pdf file',
+                    value: 'generateCompletePDF'
+                },
+                {
+                    name: 'Generate website',
+                    value: 'generateWEB'
+                }
+            ]
         });
 
-        conf.set('generateMD', !!responses.generate.find(x => x === 'generateMD'));
-        conf.set('generatePDF', !!responses.generate.find(x => x === 'generatePDF'));
-        conf.set('generateCompleteMD', !!responses.generate.find(x => x === 'generateCompleteMD'));
-        conf.set('generateCompletePDF', !!responses.generate.find(x => x === 'generateCompletePDF'));
-        conf.set('generateWEB', !!responses.generate.find(x => x === 'generateWEB'));
+        conf.set('generateMD', !!responses.generate.find((x) => x === 'generateMD'));
+        conf.set('generatePDF', !!responses.generate.find((x) => x === 'generatePDF'));
+        conf.set('generateCompleteMD', !!responses.generate.find((x) => x === 'generateCompleteMD'));
+        conf.set('generateCompletePDF', !!responses.generate.find((x) => x === 'generateCompletePDF'));
+        conf.set('generateWEB', !!responses.generate.find((x) => x === 'generateWEB'));
 
-        if (!!responses.generate.find(x => x === 'generateMD')) {
+        if (!!responses.generate.find((x) => x === 'generateMD')) {
             let mdOptions = await inquirer.prompt({
                 type: 'confirm',
                 name: 'includeNavigation',
                 message: 'Include basic navigation?',
-                default: currentConfiguration.INCLUDE_NAVIGATION === undefined ? false : currentConfiguration.INCLUDE_NAVIGATION
+                default:
+                    currentConfiguration.INCLUDE_NAVIGATION === undefined
+                        ? false
+                        : currentConfiguration.INCLUDE_NAVIGATION
             });
             conf.set('includeNavigation', mdOptions.includeNavigation);
 
@@ -130,12 +158,15 @@ module.exports = async (currentConfiguration, conf, program) => {
                 type: 'confirm',
                 name: 'includeTableOfContents',
                 message: 'Include navigable table of contents?',
-                default: currentConfiguration.INCLUDE_TABLE_OF_CONTENTS === undefined ? true : currentConfiguration.INCLUDE_TABLE_OF_CONTENTS
+                default:
+                    currentConfiguration.INCLUDE_TABLE_OF_CONTENTS === undefined
+                        ? true
+                        : currentConfiguration.INCLUDE_TABLE_OF_CONTENTS
             });
             conf.set('includeTableOfContents', mdOptions.includeTableOfContents);
         }
 
-        if (!!responses.generate.find(x => x === 'generateWEB')) {
+        if (!!responses.generate.find((x) => x === 'generateWEB')) {
             let webOptions = await inquirer.prompt({
                 type: 'input',
                 name: 'webTheme',
@@ -169,7 +200,7 @@ module.exports = async (currentConfiguration, conf, program) => {
             conf.set('webPort', webOptions.webPort);
         }
 
-        if (!!responses.generate.find(x => x === 'generatePDF' || x === 'generateCompletePDF')) {
+        if (!!responses.generate.find((x) => x === 'generatePDF' || x === 'generateCompletePDF')) {
             let pdfOptions = await inquirer.prompt({
                 type: 'input',
                 name: 'pdfCss',
@@ -182,66 +213,113 @@ module.exports = async (currentConfiguration, conf, program) => {
 
     let plantumlVersion, ver;
     if (currentConfiguration.PLANTUML_VERSION === undefined || program.config) {
-        let defaultPlantumlVersion = currentConfiguration.PLANTUML_VERSION === undefined ? 'latest' : currentConfiguration.PLANTUML_VERSION;
+        let defaultPlantumlVersion =
+            currentConfiguration.PLANTUML_VERSION === undefined
+                ? 'latest'
+                : currentConfiguration.PLANTUML_VERSION;
         responses = await inquirer.prompt({
             type: 'list',
             name: 'plantumlVersion',
             message: 'PlantUML version:',
             default: defaultPlantumlVersion,
-            choices: plantumlVersions.map(v => {
-                return {
-                    name: v.version,
-                    value: v.version
-                };
-            }).concat({
-                name: 'latest (compatible with plantuml online server)',
-                value: 'latest'
-            })
+            choices: plantumlVersions
+                .map((v) => {
+                    return {
+                        name: v.version,
+                        value: v.version
+                    };
+                })
+                .concat({
+                    name: 'latest (compatible with plantuml online server)',
+                    value: 'latest'
+                })
         });
         plantumlVersion = responses.plantumlVersion;
         conf.set('plantumlVersion', plantumlVersion);
-        if (currentConfiguration.PLANTUML_VERSION && plantumlVersion !== currentConfiguration.PLANTUML_VERSION) {
+        if (
+            currentConfiguration.PLANTUML_VERSION &&
+            plantumlVersion !== currentConfiguration.PLANTUML_VERSION
+        ) {
             console.log(chalk.bold(chalk.yellow('WARNING:')));
-            console.log(chalk.bold(chalk.yellow(`You need to update the plantuml file to include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/${plantumlVersion}.`)));
+            console.log(
+                chalk.bold(
+                    chalk.yellow(
+                        `You need to update the plantuml file to include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/${plantumlVersion}.`
+                    )
+                )
+            );
         }
     } else {
         plantumlVersion = currentConfiguration.PLANTUML_VERSION;
     }
-    ver = plantumlVersions.find(v => v.version === plantumlVersion);
-    if (plantumlVersion === 'latest')
-        ver = plantumlVersions.find(v => v.isLatest);
-    if (!ver)
-        throw new Error(`PlantUML version ${options.PLANTUML_VERSION} not supported`);
-    if (!ver.isLatest){
-        console.log(chalk.bold(chalk.yellow(`Generating diagram images using the online plantuml server will break on version ${ver.version}.`)));
-        console.log(chalk.bold(chalk.yellow(`The build will generate diagram images using the included ${ver.jar}.`)));
+    ver = plantumlVersions.find((v) => v.version === plantumlVersion);
+    if (plantumlVersion === 'latest') ver = plantumlVersions.find((v) => v.isLatest);
+    if (!ver) throw new Error(`PlantUML version ${options.PLANTUML_VERSION} not supported`);
+    if (!ver.isLatest) {
+        console.log(
+            chalk.bold(
+                chalk.yellow(
+                    `Generating diagram images using the online plantuml server will break on version ${ver.version}.`
+                )
+            )
+        );
+        console.log(
+            chalk.bold(chalk.yellow(`The build will generate diagram images using the included ${ver.jar}.`))
+        );
     }
 
-    if (currentConfiguration.GENERATE_LOCAL_IMAGES === undefined ||
+    if (
+        currentConfiguration.GENERATE_LOCAL_IMAGES === undefined ||
         currentConfiguration.EMBED_DIAGRAM === undefined ||
-        currentConfiguration.INCLUDE_BREADCRUMBS === undefined || 
-        currentConfiguration.INCLUDE_LINK_TO_DIAGRAM === undefined || 
-        program.config) {
+        currentConfiguration.INCLUDE_BREADCRUMBS === undefined ||
+        currentConfiguration.INCLUDE_LINK_TO_DIAGRAM === undefined ||
+        program.config
+    ) {
         let defaults = [
-            currentConfiguration.INCLUDE_BREADCRUMBS === undefined ? 'includeBreadcrumbs' : currentConfiguration.INCLUDE_BREADCRUMBS ? 'includeBreadcrumbs' : null,
-            currentConfiguration.GENERATE_LOCAL_IMAGES === undefined ? null : currentConfiguration.GENERATE_LOCAL_IMAGES ? 'generateLocalImages' : null,
-            currentConfiguration.INCLUDE_LINK_TO_DIAGRAM === undefined ? null : currentConfiguration.INCLUDE_LINK_TO_DIAGRAM ? 'includeLinkToDiagram' : null,
-            currentConfiguration.DIAGRAMS_ON_TOP === undefined ? 'diagramsOnTop' : currentConfiguration.DIAGRAMS_ON_TOP ? 'diagramsOnTop' : null,
-            currentConfiguration.EMBED_DIAGRAM === undefined ? null : currentConfiguration.EMBED_DIAGRAM ? 'embedDiagram' : null
+            currentConfiguration.INCLUDE_BREADCRUMBS === undefined
+                ? 'includeBreadcrumbs'
+                : currentConfiguration.INCLUDE_BREADCRUMBS
+                ? 'includeBreadcrumbs'
+                : null,
+            currentConfiguration.GENERATE_LOCAL_IMAGES === undefined
+                ? null
+                : currentConfiguration.GENERATE_LOCAL_IMAGES
+                ? 'generateLocalImages'
+                : null,
+            currentConfiguration.INCLUDE_LINK_TO_DIAGRAM === undefined
+                ? null
+                : currentConfiguration.INCLUDE_LINK_TO_DIAGRAM
+                ? 'includeLinkToDiagram'
+                : null,
+            currentConfiguration.DIAGRAMS_ON_TOP === undefined
+                ? 'diagramsOnTop'
+                : currentConfiguration.DIAGRAMS_ON_TOP
+                ? 'diagramsOnTop'
+                : null,
+            currentConfiguration.EMBED_DIAGRAM === undefined
+                ? null
+                : currentConfiguration.EMBED_DIAGRAM
+                ? 'embedDiagram'
+                : null
         ];
-        let choices = [{
-            name: 'Include breadcrumbs',
-            value: 'includeBreadcrumbs'
-        }, {
-            name: 'Replace diagrams with a link',
-            value: 'includeLinkToDiagram'
-        }, {
-            name: 'Place diagrams before text',
-            value: 'diagramsOnTop'
-        }, {
-            name: 'Embed SVG Diagram',
-            value: 'embedDiagram'
-        }];
+        let choices = [
+            {
+                name: 'Include breadcrumbs',
+                value: 'includeBreadcrumbs'
+            },
+            {
+                name: 'Replace diagrams with a link',
+                value: 'includeLinkToDiagram'
+            },
+            {
+                name: 'Place diagrams before text',
+                value: 'diagramsOnTop'
+            },
+            {
+                name: 'Embed SVG Diagram',
+                value: 'embedDiagram'
+            }
+        ];
         if (ver.isLatest)
             choices.push({
                 name: 'Generate diagram images locally',
@@ -255,12 +333,12 @@ module.exports = async (currentConfiguration, conf, program) => {
             default: defaults,
             choices: choices
         });
-        conf.set('includeBreadcrumbs', !!responses.generate.find(x => x === 'includeBreadcrumbs'));
-        conf.set('includeLinkToDiagram', !!responses.generate.find(x => x === 'includeLinkToDiagram'));
-        conf.set('diagramsOnTop', !!responses.generate.find(x => x === 'diagramsOnTop'));
-        conf.set('embedDiagram', !!responses.generate.find(x => x === 'embedDiagram'));
+        conf.set('includeBreadcrumbs', !!responses.generate.find((x) => x === 'includeBreadcrumbs'));
+        conf.set('includeLinkToDiagram', !!responses.generate.find((x) => x === 'includeLinkToDiagram'));
+        conf.set('diagramsOnTop', !!responses.generate.find((x) => x === 'diagramsOnTop'));
+        conf.set('embedDiagram', !!responses.generate.find((x) => x === 'embedDiagram'));
         if (ver.isLatest) {
-            conf.set('generateLocalImages', !!responses.generate.find(x => x === 'generateLocalImages'));
+            conf.set('generateLocalImages', !!responses.generate.find((x) => x === 'generateLocalImages'));
         } else {
             conf.set('generateLocalImages', true);
         }
@@ -274,7 +352,7 @@ module.exports = async (currentConfiguration, conf, program) => {
             default: currentConfiguration.PLANTUML_SERVER_URL || 'https://www.plantuml.com/plantuml',
             validate: validate(joi.string().trim().optional())
         });
-        conf.set('plantumlServerUrl', responses.plantumlServerUrl)
+        conf.set('plantumlServerUrl', responses.plantumlServerUrl);
     }
 
     if (!currentConfiguration.DIAGRAM_FORMAT || program.config) {
@@ -285,8 +363,8 @@ module.exports = async (currentConfiguration, conf, program) => {
             default: currentConfiguration.DIAGRAM_FORMAT || 'svg',
             validate: validate(joi.string().trim().optional())
         });
-        conf.set('diagramFormat', responses.diagramFormat)
-    }    
+        conf.set('diagramFormat', responses.diagramFormat);
+    }
 
     if (!currentConfiguration.CHARSET || program.config) {
         responses = await inquirer.prompt({

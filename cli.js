@@ -14,17 +14,14 @@ const cmdCollect = require('./cli.collect');
 const { build } = require('./build');
 const watch = require('node-watch');
 
-const {
-    clearConsole
-} = require('./utils.js');
-const updateNotifier = require('update-notifier');
+const { clearConsole } = require('./utils.js');
 
 const intro = () => {
     console.log(chalk.blue(figlet.textSync('c4builder')));
     console.log(chalk.gray('Blow up your software documentation writing skills'));
 };
 
-const getOptions = conf => {
+const getOptions = (conf) => {
     return {
         PLANTUML_VERSION: conf.get('plantumlVersion'),
         GENERATE_MD: conf.get('generateMD'),
@@ -55,12 +52,10 @@ const getOptions = conf => {
         MD_FILE_NAME: 'README',
         WEB_FILE_NAME: 'HOME',
         SUPPORT_SEARCH: conf.get('supportSearch')
-    }
+    };
 };
 
 module.exports = async () => {
-    updateNotifier({ pkg: package }).notify();
-
     program
         .version(package.version)
         .option('new', 'create a new project from template')
@@ -73,30 +68,32 @@ module.exports = async () => {
         .option('-p, --port <n>', 'port used for serving the generated site', parseInt)
         .parse(process.argv);
 
-    let conf = { get: () => { } };
+    let conf = { get: () => {} };
     if (!program.new)
-        conf = new Configstore(process.cwd().split(path.sep).splice(1).join('_'), {}, { configPath: path.join(process.cwd(), '.c4builder') });
+        conf = new Configstore(
+            process.cwd().split(path.sep).splice(1).join('_'),
+            {},
+            { configPath: path.join(process.cwd(), '.c4builder') }
+        );
 
-    if (program.docs)
-        return cmdHelp();
+    if (program.docs) return cmdHelp();
 
     //initial options
     let options = getOptions(conf);
 
-    if (program.new || program.config || !options.HAS_RUN)
-        clearConsole();
+    if (program.new || program.config || !options.HAS_RUN) clearConsole();
 
     intro();
 
     if (!options.HAS_RUN && !program.new) {
-        console.log(`\nif you created the project using the 'c4model new' command you can just press enter and go with the default options to get a basic idea of how it works.\n`);
+        console.log(
+            `\nif you created the project using the 'c4model new' command you can just press enter and go with the default options to get a basic idea of how it works.\n`
+        );
         console.log(`you can always change the configuration by running > c4builder config\n`);
     }
 
-    if (program.new)
-        return cmdNewProject();
-    if (program.list)
-        return cmdList(options);
+    if (program.new) return cmdNewProject();
+    if (program.list) return cmdList(options);
 
     if (program.reset) {
         conf.clear();
@@ -114,11 +111,15 @@ module.exports = async () => {
         options = getOptions(conf);
         if (program.watch) {
             //watch warning
-            if (options.GENERATE_PDF ||
-                options.GENERATE_COMPLETE_PDF_FILE ||
-                options.GENERATE_LOCAL_IMAGES) {
+            if (options.GENERATE_PDF || options.GENERATE_COMPLETE_PDF_FILE || options.GENERATE_LOCAL_IMAGES) {
                 console.log(chalk.bold(chalk.yellow('\nWARNING:')));
-                console.log(chalk.bold(chalk.yellow('Rebuilding with pdf or local image generation enabled will take a long time')));
+                console.log(
+                    chalk.bold(
+                        chalk.yellow(
+                            'Rebuilding with pdf or local image generation enabled will take a long time'
+                        )
+                    )
+                );
             }
 
             watch(options.ROOT_FOLDER, { recursive: true }, async (evt, name) => {
@@ -127,11 +128,19 @@ module.exports = async () => {
                 console.log(chalk.gray(`\n${name} changed. Rebuilding...`));
                 if (isBuilding) {
                     attemptedWatchBuild = true;
-                    if (options.GENERATE_PDF ||
+                    if (
+                        options.GENERATE_PDF ||
                         options.GENERATE_COMPLETE_PDF_FILE ||
-                        options.GENERATE_LOCAL_IMAGES)
-                        console.log(chalk.bold(chalk.yellow('Build already in progress, consider disabling pdf or local image generation ')));
-                    
+                        options.GENERATE_LOCAL_IMAGES
+                    )
+                        console.log(
+                            chalk.bold(
+                                chalk.yellow(
+                                    'Build already in progress, consider disabling pdf or local image generation '
+                                )
+                            )
+                        );
+
                     return;
                 }
 
@@ -149,8 +158,7 @@ module.exports = async () => {
         await build(options);
         isBuilding = false;
 
-        if (program.site)
-            return await cmdSite(options, program);
+        if (program.site) return await cmdSite(options, program);
 
         if (options.GENERATE_WEBSITE && !program.watch) {
             console.log(chalk.gray('\nto view the generated website run'));

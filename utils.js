@@ -1,35 +1,36 @@
 const fs = require('fs');
 const zlib = require('zlib');
 
-const makeDirectory = (path) => new Promise((resolve) => {
-    fs.mkdir(path, () => {
-        return resolve();
+const makeDirectory = (path) =>
+    new Promise((resolve) => {
+        fs.mkdir(path, () => {
+            return resolve();
+        });
     });
-});
 
-const readFile = (path, type) => new Promise((resolve, reject) => {
-    fs.readFile(path, type, (err, data) => {
-        if (err)
-            return reject(err);
+const readFile = (path, type) =>
+    new Promise((resolve, reject) => {
+        fs.readFile(path, type, (err, data) => {
+            if (err) return reject(err);
 
-        return resolve(data);
+            return resolve(data);
+        });
     });
-});
 
-const writeFile = (path, data) => new Promise((resolve, reject) => {
-    fs.writeFile(path, data, (err, res) => {
-        if (err)
-            return reject(err);
+const writeFile = (path, data) =>
+    new Promise((resolve, reject) => {
+        fs.writeFile(path, data, (err, res) => {
+            if (err) return reject(err);
 
-        return resolve(res);
+            return resolve(res);
+        });
     });
-});
 
 const writeOnSameLine = async (message, fn) => {
     process.stdout.write(`${message}\r`);
 };
 
-const encodeURIPath = path => {
+const encodeURIPath = (path) => {
     path = path.split('\\').join('/');
     return encodeURI(path);
 };
@@ -68,7 +69,7 @@ const urlTextFrom = (s) => {
      * LastModified: Dec 25 1999
      */
     function encode64(data) {
-        let r = "";
+        let r = '';
         for (let i = 0; i < data.length; i += 3) {
             if (i + 2 == data.length) {
                 r += append3bytes(data.charCodeAt(i), data.charCodeAt(i + 1), 0);
@@ -84,13 +85,13 @@ const urlTextFrom = (s) => {
     function append3bytes(b1, b2, b3) {
         let c1 = b1 >> 2;
         let c2 = ((b1 & 0x3) << 4) | (b2 >> 4);
-        let c3 = ((b2 & 0xF) << 2) | (b3 >> 6);
-        let c4 = b3 & 0x3F;
-        let r = "";
-        r += encode6bit(c1 & 0x3F);
-        r += encode6bit(c2 & 0x3F);
-        r += encode6bit(c3 & 0x3F);
-        r += encode6bit(c4 & 0x3F);
+        let c3 = ((b2 & 0xf) << 2) | (b3 >> 6);
+        let c4 = b3 & 0x3f;
+        let r = '';
+        r += encode6bit(c1 & 0x3f);
+        r += encode6bit(c2 & 0x3f);
+        r += encode6bit(c3 & 0x3f);
+        r += encode6bit(c4 & 0x3f);
         return r;
     }
     function encode6bit(b) {
@@ -116,30 +117,37 @@ const urlTextFrom = (s) => {
     }
 };
 
-const plantUmlServerUrl = (baseURL, imageFormat, content) => `${baseURL}/${imageFormat}/0/${urlTextFrom(content)}`;
+const plantUmlServerUrl = (baseURL, imageFormat, content) =>
+    `${baseURL}/${imageFormat}/0/${urlTextFrom(content)}`;
 
 const clearConsole = () => {
     process.stdout.write('\x1b[2J');
     process.stdout.write('\x1b[0f');
-}
+};
 
-const plantumlVersions = [{
-    version: '1.2019.09',
-    jar: 'plantuml-1.2019.9.jar'
-}, {
-    version: '1.2020.07',
-    jar: 'plantuml-1.2020.7.jar'
-}, {
-    version: '1.2020.17',
-    jar: 'plantuml.1.2020.17.jar'
-}, {
-    version: '1.2021.7',
-    jar: 'plantuml.1.2021.7.jar'
-}, {
-    version: '1.2021.12',
-    isLatest: true,
-    jar: 'plantuml.1.2021.12.jar'
-}];
+const plantumlVersions = [
+    {
+        version: '1.2020.07',
+        jar: 'plantuml-1.2020.7.jar'
+    },
+    {
+        version: '1.2020.17',
+        jar: 'plantuml.1.2020.17.jar'
+    },
+    {
+        version: '1.2021.7',
+        jar: 'plantuml.1.2021.7.jar'
+    },
+    {
+        version: '1.2021.12',
+        jar: 'plantuml.1.2021.12.jar'
+    },
+    {
+        version: '1.2022.3',
+        isLatest: true,
+        jar: 'plantuml-1.2022.3.jar'
+    }
+];
 
 module.exports = {
     makeDirectory,
@@ -150,4 +158,4 @@ module.exports = {
     clearConsole,
     plantUmlServerUrl,
     plantumlVersions
-}
+};

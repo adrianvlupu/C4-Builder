@@ -223,6 +223,8 @@ The project is still in it's early phase and I intend on using it on some actual
 
 Resolved npm vulnerabilities
 
+Latest plantuml jar file 1.2022.3.jar
+
 Search in site sidebar [#48](https://github.com/adrianvlupu/C4-Builder/pull/48) ([arifinoid](https://github.com/arifinoid))
 
 ## v0.2.11

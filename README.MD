@@ -225,6 +225,8 @@ Resolved npm vulnerabilities
 
 Latest plantuml jar file 1.2022.3.jar
 
+Dockerfile [#51](https://github.com/adrianvlupu/C4-Builder/pull/51) ([craigwardman](https://github.com/craigwardman))
+
 Search in site sidebar [#48](https://github.com/adrianvlupu/C4-Builder/pull/48) ([arifinoid](https://github.com/arifinoid))
 
 ## v0.2.11

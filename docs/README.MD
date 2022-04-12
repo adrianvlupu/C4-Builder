@@ -227,6 +227,8 @@ The project is still in it's early phase and I intend on using it on some actual
 
 ## v0.2.12
 
+Support for Ditaa Diagrams [#56](https://github.com/adrianvlupu/C4-Builder/pull/56/files/2950c2d8f1729217973891a896121b8da8eb56eb#diff-7d111b05fe05c50beb729d1e99a36010fbda8c89b57a1a26ac3e7b0778a0ed53) ([MickeJohannesson](https://github.com/MickeJohannesson))
+
 Resolved npm vulnerabilities
 
 Latest plantuml jar file 1.2022.3.jar

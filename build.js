@@ -96,7 +96,8 @@ const generateTree = async (dir, options) => {
         const pumlFiles = files.filter((x) => path.extname(x).toLowerCase() === '.puml');
         for (const pumlFile of pumlFiles) {
             const fileContents = await readFile(path.join(dir, pumlFile));
-            item.pumlFiles.push({ dir: pumlFile, content: fileContents });
+            const isDitaa = !!(fileContents ? fileContents.toString() : '').match(/(@startditaa)/gi);
+            item.pumlFiles.push({ dir: pumlFile, content: fileContents, isDitaa });
         }
         item.pumlFiles.sort(function (a, b) {
             return ('' + a.dir).localeCompare(b.dir);
@@ -104,7 +105,7 @@ const generateTree = async (dir, options) => {
 
         //copy all other files
         const otherFiles = files.filter(
-            (x) => ['.md', '.puml'].indexOf(path.extname(x).toLowerCase()) === -1
+            (x) => x.charAt(0) === '_' || ['.md', '.puml'].indexOf(path.extname(x).toLowerCase()) === -1
         );
         for (const otherFile of otherFiles) {
             if (fs.statSync(path.join(dir, otherFile)).isDirectory()) continue;
@@ -129,20 +130,16 @@ const generateImages = async (tree, options, onImageGenerated) => {
     let processedImages = 0;
 
     for (const item of tree) {
-        let files = fs.readdirSync(item.dir).filter((x) => x.charAt(0) !== '_');
-        const pumlFiles = files.filter((x) => path.extname(x).toLowerCase() === '.puml');
-        totalImages += pumlFiles.length;
+        totalImages += item.pumlFiles.length;
     }
     for (const item of tree) {
-        let files = fs.readdirSync(item.dir).filter((x) => x.charAt(0) !== '_');
-        const pumlFiles = files.filter((x) => path.extname(x).toLowerCase() === '.puml');
-        for (const pumlFile of pumlFiles) {
+        for (const pumlFile of item.pumlFiles) {
             //write diagram as image
             let stream = fs.createWriteStream(
                 path.join(
                     options.DIST_FOLDER,
                     item.dir.replace(options.ROOT_FOLDER, ''),
-                    `${path.parse(pumlFile).name}.${options.DIAGRAM_FORMAT}`
+                    `${path.parse(pumlFile.dir).name}.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
                 )
             );
 
@@ -154,8 +151,8 @@ const generateImages = async (tree, options, onImageGenerated) => {
             const plantuml = require('node-plantuml');
 
             plantuml
-                .generate(path.join(item.dir, pumlFile), {
-                    format: options.DIAGRAM_FORMAT,
+                .generate(path.join(item.dir, pumlFile.dir), {
+                    format: pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
                     charset: options.CHARSET,
                     include: item.dir
                 })
@@ -209,13 +206,14 @@ const generateCompleteMD = async (tree, options) => {
                 let diagramUrl = encodeURIPath(
                     path.join(
                         path.dirname(pumlFile.dir),
-                        path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
+                        path.parse(pumlFile.dir).name +
+                            `.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
                     )
                 );
                 if (!options.GENERATE_LOCAL_IMAGES)
                     diagramUrl = plantUmlServerUrl(
                         options.PLANTUML_SERVER_URL,
-                        options.DIAGRAM_FORMAT,
+                        pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
                         pumlFile.content
                     );
 
@@ -234,7 +232,7 @@ const generateCompleteMD = async (tree, options) => {
                     else imgContent = await httpGet(diagramUrl);
 
                     MD += `\n![${path.parse(pumlFile.dir).name}](data:${getMime(
-                        options.DIAGRAM_FORMAT
+                        pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT
                     )};base64,${imgContent})\n`;
 
                     let diagramLink = `\n[Download ${path.parse(pumlFile.dir).name} diagram](${encodeURIPath(
@@ -305,13 +303,14 @@ const generateCompletePDF = async (tree, options) => {
                 let diagramUrl = encodeURIPath(
                     path.join(
                         item.dir.replace(options.ROOT_FOLDER, ''),
-                        path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
+                        path.parse(pumlFile.dir).name +
+                            `.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
                     )
                 );
                 if (!options.GENERATE_LOCAL_IMAGES)
                     diagramUrl = plantUmlServerUrl(
                         options.PLANTUML_SERVER_URL,
-                        options.DIAGRAM_FORMAT,
+                        pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
                         pumlFile.content
                     );
 
@@ -446,13 +445,14 @@ const generateMD = async (tree, options, onProgress) => {
                 let diagramUrl = encodeURIPath(
                     path.join(
                         path.dirname(pumlFile.dir),
-                        path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
+                        path.parse(pumlFile.dir).name +
+                            `.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
                     )
                 );
                 if (!options.GENERATE_LOCAL_IMAGES)
                     diagramUrl = plantUmlServerUrl(
                         options.PLANTUML_SERVER_URL,
-                        options.DIAGRAM_FORMAT,
+                        pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
                         pumlFile.content
                     );
 
@@ -471,7 +471,7 @@ const generateMD = async (tree, options, onProgress) => {
                     else imgContent = await httpGet(diagramUrl);
 
                     MD += `\n![${path.parse(pumlFile.dir).name}](data:${getMime(
-                        options.DIAGRAM_FORMAT
+                        pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT
                     )};base64,${imgContent})\n`;
 
                     let diagramLink = `[Download ${
@@ -540,11 +540,13 @@ const generatePDF = async (tree, options, onProgress) => {
         const appendImages = () => {
             for (const pumlFile of item.pumlFiles) {
                 MD += '\n\n';
-                let diagramUrl = encodeURIPath(path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`);
+                let diagramUrl = encodeURIPath(
+                    path.parse(pumlFile.dir).name + `.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
+                );
                 if (!options.GENERATE_LOCAL_IMAGES)
                     diagramUrl = plantUmlServerUrl(
                         options.PLANTUML_SERVER_URL,
-                        options.DIAGRAM_FORMAT,
+                        pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
                         pumlFile.content
                     );
 
@@ -656,13 +658,14 @@ const generateWebMD = async (tree, options) => {
                 let diagramUrl = encodeURIPath(
                     path.join(
                         path.dirname(pumlFile.dir),
-                        path.parse(pumlFile.dir).name + `.${options.DIAGRAM_FORMAT}`
+                        path.parse(pumlFile.dir).name +
+                            `.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
                     )
                 );
                 if (!options.GENERATE_LOCAL_IMAGES)
                     diagramUrl = plantUmlServerUrl(
                         options.PLANTUML_SERVER_URL,
-                        options.DIAGRAM_FORMAT,
+                        pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
                         pumlFile.content
                     );
 
@@ -681,7 +684,7 @@ const generateWebMD = async (tree, options) => {
                     else imgContent = await httpGet(diagramUrl);
 
                     MD += `\n![${path.parse(pumlFile.dir).name}](data:${getMime(
-                        options.DIAGRAM_FORMAT
+                        pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT
                     )};base64,${imgContent})\n`;
 
                     let diagramLink = `[Download ${

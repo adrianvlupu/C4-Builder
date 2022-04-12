@@ -112,6 +112,8 @@ c4builder comes with a wizard for managing configuration for each project folder
 >
 > Files starting with \_ will be ignored during the build process
 
+**Diagrams can be placed at arbitrary positions by adding them to the markdown file like this: `![name](<diagram name>.puml)`**
+
 ## The output
 
 Using the configuration wizard you can choose any combination of outputs. By default all are enabled.
@@ -219,13 +221,27 @@ The project is still in it's early phase and I intend on using it on some actual
 
 # Change log
 
-## v0.2.12
+## v0.2.13
+
+Diagrams at arbitrary positions [#28](https://github.com/adrianvlupu/C4-Builder/pull/28) ([Sjuanola](https://github.com/sju66))
+
+Support for Ditaa Diagrams [#56](https://github.com/adrianvlupu/C4-Builder/pull/56) ([MickeJohannesson](https://github.com/MickeJohannesson))
 
 Resolved npm vulnerabilities
 
 Latest plantuml jar file 1.2022.3.jar
 
+Dockerfile [#51](https://github.com/adrianvlupu/C4-Builder/pull/51) ([craigwardman](https://github.com/craigwardman))
+
 Search in site sidebar [#48](https://github.com/adrianvlupu/C4-Builder/pull/48) ([arifinoid](https://github.com/arifinoid))
+
+## v0.2.12
+
+Relative urls in TOC for multiple markdown files [#9](https://github.com/adrianvlupu/C4-Builder/issues/5).
+
+Fixed Processed 1/1..2/2 files bug.
+
+Added another version of the PlantUML jar file.
 
 ## v0.2.11
 

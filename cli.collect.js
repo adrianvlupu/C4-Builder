@@ -179,7 +179,7 @@ module.exports = async (currentConfiguration, conf, program) => {
                 type: 'input',
                 name: 'supportSearch',
                 message: 'Support search on navbar?',
-                default: true,
+                default: true
             });
             conf.set('supportSearch', webOptions.supportSearch);
 

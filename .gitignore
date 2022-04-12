@@ -1,4 +1,8 @@
 node_modules
 template/docs/
 template/.c4builder
+
+#intellij
+.idea
+*.iml
 *.tgz

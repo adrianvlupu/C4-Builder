@@ -165,6 +165,51 @@ const generateImages = async (tree, options, onImageGenerated) => {
     }
 };
 
+const compileDocument = async (md, item, options, getDiagram) => {
+    let MD = md;
+    const alreadyIncludedPumls = [];
+    const texts = [];
+    const diagrams = [];
+
+    for (const mdFile of item.mdFiles) {
+        let content = mdFile.toString();
+        const pumlRef = new RegExp(/(?:!\[.*?\]\()(.*\.puml)(\))/g).exec(content);
+        if (pumlRef && pumlRef[1]) {
+            const pumlFile = item.pumlFiles.find((x) => x.dir === pumlRef[1]);
+            if (pumlFile) {
+                alreadyIncludedPumls.push(pumlRef[1]);
+
+                content = content.replace(
+                    /(?:!\[.*?\]\()(.*\.puml)(\))/g,
+                    await getDiagram(item, pumlFile, options)
+                );
+            }
+        }
+        texts.push(content);
+    }
+    for (const pumlFile of item.pumlFiles) {
+        if (alreadyIncludedPumls.find((x) => x === pumlFile.dir)) {
+            continue;
+        }
+
+        diagrams.push(await getDiagram(item, pumlFile, options));
+    }
+
+    let fullDoc = [];
+    if (options.DIAGRAMS_ON_TOP) {
+        fullDoc = [...diagrams, ...texts];
+    } else {
+        fullDoc = [...texts, ...diagrams];
+    }
+
+    for (const doc of fullDoc) {
+        MD += '\n\n';
+        MD += doc;
+    }
+
+    return MD;
+};
+
 const generateCompleteMD = async (tree, options) => {
     let filePromises = [];
 
@@ -192,74 +237,54 @@ const generateCompleteMD = async (tree, options) => {
         }
 
         //concatenate markdown files
-        const appendText = () => {
-            for (const mdFile of item.mdFiles) {
-                MD += '\n\n';
-                MD += mdFile;
-            }
-        };
-        //add diagrams
-        const appendImages = async () => {
-            for (const pumlFile of item.pumlFiles) {
-                MD += '\n\n';
-
-                let diagramUrl = encodeURIPath(
-                    path.join(
-                        path.dirname(pumlFile.dir),
-                        path.parse(pumlFile.dir).name +
-                            `.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
-                    )
+        MD = await compileDocument(MD, item, options, async (item, pumlFile, options) => {
+            let diagramUrl = encodeURIPath(
+                path.join(
+                    path.dirname(pumlFile.dir),
+                    path.parse(pumlFile.dir).name + `.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
+                )
+            );
+            if (!options.GENERATE_LOCAL_IMAGES)
+                diagramUrl = plantUmlServerUrl(
+                    options.PLANTUML_SERVER_URL,
+                    pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
+                    pumlFile.content
                 );
-                if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(
-                        options.PLANTUML_SERVER_URL,
-                        pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
-                        pumlFile.content
-                    );
 
-                if (options.EMBED_DIAGRAM) {
-                    let imgContent = '';
-                    if (options.GENERATE_LOCAL_IMAGES)
-                        imgContent = (
-                            await readFile(
-                                path.join(
-                                    options.DIST_FOLDER,
-                                    item.dir.replace(options.ROOT_FOLDER, ''),
-                                    diagramUrl
-                                )
+            if (options.EMBED_DIAGRAM) {
+                let imgContent = '';
+                if (options.GENERATE_LOCAL_IMAGES)
+                    imgContent = (
+                        await readFile(
+                            path.join(
+                                options.DIST_FOLDER,
+                                item.dir.replace(options.ROOT_FOLDER, ''),
+                                diagramUrl
                             )
-                        ).toString('base64');
-                    else imgContent = await httpGet(diagramUrl);
+                        )
+                    ).toString('base64');
+                else imgContent = await httpGet(diagramUrl);
 
-                    MD += `\n![${path.parse(pumlFile.dir).name}](data:${getMime(
-                        pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT
-                    )};base64,${imgContent})\n`;
+                let diagramImage = `\n![${path.parse(pumlFile.dir).name}](data:${getMime(
+                    pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT
+                )};base64,${imgContent})\n`;
 
-                    let diagramLink = `\n[Download ${path.parse(pumlFile.dir).name} diagram](${encodeURIPath(
-                        path.join(item.dir.replace(options.ROOT_FOLDER, ''), diagramUrl)
-                    )} ':ignore')`;
-                    MD += diagramLink;
-                } else {
-                    let diagramImage = `![diagram](${diagramUrl})`;
-                    let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${encodeURIPath(
-                        path.join(item.dir.replace(options.ROOT_FOLDER, ''), diagramUrl)
-                    )})`;
-                    if (!options.INCLUDE_LINK_TO_DIAGRAM)
-                        //img
-                        MD += diagramImage;
-                    //link
-                    else MD += diagramLink;
-                }
+                let diagramLink = `\n[Download ${path.parse(pumlFile.dir).name} diagram](${encodeURIPath(
+                    path.join(item.dir.replace(options.ROOT_FOLDER, ''), diagramUrl)
+                )} ':ignore')`;
+                return diagramImage + diagramLink;
+            } else {
+                let diagramImage = `![diagram](${diagramUrl})`;
+                let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${encodeURIPath(
+                    path.join(item.dir.replace(options.ROOT_FOLDER, ''), diagramUrl)
+                )})`;
+                if (!options.INCLUDE_LINK_TO_DIAGRAM)
+                    //img
+                    return diagramImage;
+                //link
+                else return diagramLink;
             }
-        };
-
-        if (options.DIAGRAMS_ON_TOP) {
-            await appendImages();
-            appendText();
-        } else {
-            appendText();
-            await appendImages();
-        }
+        });
     }
 
     //write file to disk
@@ -290,43 +315,24 @@ const generateCompletePDF = async (tree, options) => {
         }
 
         //concatenate markdown files
-        const appendText = () => {
-            for (const mdFile of item.mdFiles) {
-                MD += '\n\n';
-                MD += mdFile;
-            }
-        };
-        //add diagrams
-        const appendImages = () => {
-            for (const pumlFile of item.pumlFiles) {
-                MD += '\n\n';
-                let diagramUrl = encodeURIPath(
-                    path.join(
-                        item.dir.replace(options.ROOT_FOLDER, ''),
-                        path.parse(pumlFile.dir).name +
-                            `.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
-                    )
+        MD = await compileDocument(MD, item, options, async (item, pumlFile, options) => {
+            let diagramUrl = encodeURIPath(
+                path.join(
+                    item.dir.replace(options.ROOT_FOLDER, ''),
+                    path.parse(pumlFile.dir).name + `.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
+                )
+            );
+            if (!options.GENERATE_LOCAL_IMAGES)
+                diagramUrl = plantUmlServerUrl(
+                    options.PLANTUML_SERVER_URL,
+                    pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
+                    pumlFile.content
                 );
-                if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(
-                        options.PLANTUML_SERVER_URL,
-                        pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
-                        pumlFile.content
-                    );
 
-                let diagramImage = `![diagram](${diagramUrl})`;
+            let diagramImage = `![diagram](${diagramUrl})`;
 
-                MD += diagramImage;
-            }
-        };
-
-        if (options.DIAGRAMS_ON_TOP) {
-            appendImages();
-            appendText();
-        } else {
-            appendText();
-            appendImages();
-        }
+            return diagramImage;
+        });
     }
 
     //write temp file
@@ -431,72 +437,52 @@ const generateMD = async (tree, options, onProgress) => {
         if (options.INCLUDE_NAVIGATION) MD += `\n\n---`;
 
         //concatenate markdown files
-        const appendText = () => {
-            for (const mdFile of item.mdFiles) {
-                MD += '\n\n';
-                MD += mdFile;
-            }
-        };
-        //add diagrams
-        const appendImages = async () => {
-            for (const pumlFile of item.pumlFiles) {
-                MD += '\n\n';
-
-                let diagramUrl = encodeURIPath(
-                    path.join(
-                        path.dirname(pumlFile.dir),
-                        path.parse(pumlFile.dir).name +
-                            `.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
-                    )
+        MD = await compileDocument(MD, item, options, async (item, pumlFile, options) => {
+            let diagramUrl = encodeURIPath(
+                path.join(
+                    path.dirname(pumlFile.dir),
+                    path.parse(pumlFile.dir).name + `.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
+                )
+            );
+            if (!options.GENERATE_LOCAL_IMAGES)
+                diagramUrl = plantUmlServerUrl(
+                    options.PLANTUML_SERVER_URL,
+                    pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
+                    pumlFile.content
                 );
-                if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(
-                        options.PLANTUML_SERVER_URL,
-                        pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
-                        pumlFile.content
-                    );
 
-                if (options.EMBED_DIAGRAM) {
-                    let imgContent = '';
-                    if (options.GENERATE_LOCAL_IMAGES)
-                        imgContent = (
-                            await readFile(
-                                path.join(
-                                    options.DIST_FOLDER,
-                                    item.dir.replace(options.ROOT_FOLDER, ''),
-                                    diagramUrl
-                                )
+            if (options.EMBED_DIAGRAM) {
+                let imgContent = '';
+                if (options.GENERATE_LOCAL_IMAGES)
+                    imgContent = (
+                        await readFile(
+                            path.join(
+                                options.DIST_FOLDER,
+                                item.dir.replace(options.ROOT_FOLDER, ''),
+                                diagramUrl
                             )
-                        ).toString('base64');
-                    else imgContent = await httpGet(diagramUrl);
+                        )
+                    ).toString('base64');
+                else imgContent = await httpGet(diagramUrl);
 
-                    MD += `\n![${path.parse(pumlFile.dir).name}](data:${getMime(
-                        pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT
-                    )};base64,${imgContent})\n`;
+                let diagramImage = `\n![${path.parse(pumlFile.dir).name}](data:${getMime(
+                    pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT
+                )};base64,${imgContent})\n`;
 
-                    let diagramLink = `[Download ${
-                        path.parse(pumlFile.dir).name
-                    } diagram](${diagramUrl} ':ignore')`;
-                    MD += diagramLink;
-                } else {
-                    let diagramImage = `![diagram](${diagramUrl})`;
-                    let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
-                    if (!options.INCLUDE_LINK_TO_DIAGRAM)
-                        //img
-                        MD += diagramImage;
-                    //link
-                    else MD += diagramLink;
-                }
+                let diagramLink = `[Download ${
+                    path.parse(pumlFile.dir).name
+                } diagram](${diagramUrl} ':ignore')`;
+                return diagramImage + diagramLink;
+            } else {
+                let diagramImage = `![diagram](${diagramUrl})`;
+                let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
+                if (!options.INCLUDE_LINK_TO_DIAGRAM)
+                    //img
+                    return diagramImage;
+                //link
+                else return diagramLink;
             }
-        };
-
-        if (options.DIAGRAMS_ON_TOP) {
-            await appendImages();
-            appendText();
-        } else {
-            appendText();
-            await appendImages();
-        }
+        });
 
         //write to disk
         filePromises.push(
@@ -530,39 +516,21 @@ const generatePDF = async (tree, options, onProgress) => {
             MD += `\n\n\`${item.dir.replace(options.ROOT_FOLDER, '')}\``;
 
         //concatenate markdown files
-        const appendText = () => {
-            for (const mdFile of item.mdFiles) {
-                MD += '\n\n';
-                MD += mdFile;
-            }
-        };
-        //add diagrams
-        const appendImages = () => {
-            for (const pumlFile of item.pumlFiles) {
-                MD += '\n\n';
-                let diagramUrl = encodeURIPath(
-                    path.parse(pumlFile.dir).name + `.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
+        MD = await compileDocument(MD, item, options, async (item, pumlFile, options) => {
+            let diagramUrl = encodeURIPath(
+                path.parse(pumlFile.dir).name + `.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
+            );
+            if (!options.GENERATE_LOCAL_IMAGES)
+                diagramUrl = plantUmlServerUrl(
+                    options.PLANTUML_SERVER_URL,
+                    pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
+                    pumlFile.content
                 );
-                if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(
-                        options.PLANTUML_SERVER_URL,
-                        pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
-                        pumlFile.content
-                    );
 
-                let diagramImage = `![diagram](${diagramUrl})`;
+            let diagramImage = `![diagram](${diagramUrl})`;
 
-                MD += diagramImage;
-            }
-        };
-
-        if (options.DIAGRAMS_ON_TOP) {
-            appendImages();
-            appendText();
-        } else {
-            appendText();
-            appendImages();
-        }
+            return diagramImage;
+        });
 
         //write temp file
         filePromises.push(
@@ -644,72 +612,53 @@ const generateWebMD = async (tree, options) => {
         let MD = `# ${name}`;
 
         //concatenate markdown files
-        const appendText = () => {
-            for (const mdFile of item.mdFiles) {
-                MD += '\n\n';
-                MD += mdFile;
-            }
-        };
-        //add diagrams
-        const appendImages = async () => {
-            for (const pumlFile of item.pumlFiles) {
-                MD += '\n\n';
-
-                let diagramUrl = encodeURIPath(
-                    path.join(
-                        path.dirname(pumlFile.dir),
-                        path.parse(pumlFile.dir).name +
-                            `.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
-                    )
+        MD = await compileDocument(MD, item, options, async (item, pumlFile, options) => {
+            let diagramUrl = encodeURIPath(
+                path.join(
+                    path.dirname(pumlFile.dir),
+                    path.parse(pumlFile.dir).name + `.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
+                )
+            );
+            if (!options.GENERATE_LOCAL_IMAGES)
+                diagramUrl = plantUmlServerUrl(
+                    options.PLANTUML_SERVER_URL,
+                    pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
+                    pumlFile.content
                 );
-                if (!options.GENERATE_LOCAL_IMAGES)
-                    diagramUrl = plantUmlServerUrl(
-                        options.PLANTUML_SERVER_URL,
-                        pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
-                        pumlFile.content
-                    );
 
-                if (options.EMBED_DIAGRAM) {
-                    let imgContent = '';
-                    if (options.GENERATE_LOCAL_IMAGES)
-                        imgContent = (
-                            await readFile(
-                                path.join(
-                                    options.DIST_FOLDER,
-                                    item.dir.replace(options.ROOT_FOLDER, ''),
-                                    diagramUrl
-                                )
+            if (options.EMBED_DIAGRAM) {
+                let imgContent = '';
+                if (options.GENERATE_LOCAL_IMAGES)
+                    imgContent = (
+                        await readFile(
+                            path.join(
+                                options.DIST_FOLDER,
+                                item.dir.replace(options.ROOT_FOLDER, ''),
+                                diagramUrl
                             )
-                        ).toString('base64');
-                    else imgContent = await httpGet(diagramUrl);
+                        )
+                    ).toString('base64');
+                else imgContent = await httpGet(diagramUrl);
 
-                    MD += `\n![${path.parse(pumlFile.dir).name}](data:${getMime(
-                        pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT
-                    )};base64,${imgContent})\n`;
+                let diagramImage = `\n![${path.parse(pumlFile.dir).name}](data:${getMime(
+                    pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT
+                )};base64,${imgContent})\n`;
 
-                    let diagramLink = `[Download ${
-                        path.parse(pumlFile.dir).name
-                    } diagram](${diagramUrl} ':ignore')`;
-                    MD += diagramLink;
-                } else {
-                    let diagramImage = `![diagram](${diagramUrl})`;
-                    let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
-                    if (!options.INCLUDE_LINK_TO_DIAGRAM)
-                        //img
-                        MD += diagramImage;
-                    //link
-                    else MD += diagramLink;
-                }
+                let diagramLink = `[Download ${
+                    path.parse(pumlFile.dir).name
+                } diagram](${diagramUrl} ':ignore')`;
+
+                return diagramImage + diagramLink;
+            } else {
+                let diagramImage = `![diagram](${diagramUrl})`;
+                let diagramLink = `[Go to ${path.parse(pumlFile.dir).name} diagram](${diagramUrl})`;
+                if (!options.INCLUDE_LINK_TO_DIAGRAM)
+                    //img
+                    return diagramImage;
+                //link
+                else return diagramLink;
             }
-        };
-
-        if (options.DIAGRAMS_ON_TOP) {
-            await appendImages();
-            appendText();
-        } else {
-            appendText();
-            await appendImages();
-        }
+        });
 
         //write to disk
         filePromises.push(

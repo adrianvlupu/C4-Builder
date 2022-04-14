@@ -806,7 +806,7 @@ const build = async (options) => {
     }
 
     // Remove image backup folder
-    await fsextra.removeSync(options.DIST_FOLDER + '_bk');
+    await fsextra.removeSync(bkFolderName);
 
     console.log(chalk.green(`built in ${(new Date() - start_date) / 1000} seconds`));
 };

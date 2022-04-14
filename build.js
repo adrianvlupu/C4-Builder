@@ -104,9 +104,12 @@ const generateTree = async (dir, options) => {
         });
 
         //copy all other files
-        const otherFiles = files.filter(
-            (x) => x.charAt(0) === '_' || ['.md', '.puml'].indexOf(path.extname(x).toLowerCase()) === -1
-        );
+        const otherFiles = options.EXCLUDE_OTHER_FILES 
+            ? [] 
+            : files.filter(
+                (x) => x.charAt(0) === '_' || ['.md', '.puml'].indexOf(path.extname(x).toLowerCase()) === -1
+            );
+
         for (const otherFile of otherFiles) {
             if (fs.statSync(path.join(dir, otherFile)).isDirectory()) continue;
 

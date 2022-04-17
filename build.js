@@ -170,19 +170,19 @@ const compileDocument = async (md, item, options, getDiagram) => {
     const alreadyIncludedPumls = [];
     const texts = [];
     const diagrams = [];
+    const regex = /(?:!\[.*?\]\()(.*\.puml)(\))/g;
 
     for (const mdFile of item.mdFiles) {
         let content = mdFile.toString();
-        const pumlRef = new RegExp(/(?:!\[.*?\]\()(.*\.puml)(\))/g).exec(content);
-        if (pumlRef && pumlRef[1]) {
-            const pumlFile = item.pumlFiles.find((x) => x.dir === pumlRef[1]);
-            if (pumlFile) {
-                alreadyIncludedPumls.push(pumlRef[1]);
 
-                content = content.replace(
-                    /(?:!\[.*?\]\()(.*\.puml)(\))/g,
-                    await getDiagram(item, pumlFile, options)
-                );
+        let pumlRef;
+        while ((pumlRef = regex.exec(content)) !== null) {
+            if(pumlRef && pumlRef[1]){
+                const pumlFile = item.pumlFiles.find((x) => x.dir === pumlRef[1]);
+                if (pumlFile) {
+                    alreadyIncludedPumls.push(pumlRef[1]);
+                    content = content.replace(pumlRef[0], await getDiagram(item, pumlFile, options));
+                }    
             }
         }
         texts.push(content);

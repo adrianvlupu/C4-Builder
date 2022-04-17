@@ -6,7 +6,7 @@ const chalk = require('chalk');
 const { plantumlVersions } = require('./utils');
 
 const validate = (schema) => (answers) => {
-    return !joi.validate(answers, schema).error;
+    return !schema.validate(answers).error;
 };
 
 module.exports = async (currentConfiguration, conf, program) => {
@@ -315,7 +315,6 @@ module.exports = async (currentConfiguration, conf, program) => {
                 : currentConfiguration.EXCLUDE_OTHER_FILES
                 ? 'excludeOtherFiles'
                 : null
-
         ];
         let choices = [
             {
@@ -357,7 +356,7 @@ module.exports = async (currentConfiguration, conf, program) => {
         conf.set('diagramsOnTop', !!responses.generate.find((x) => x === 'diagramsOnTop'));
         conf.set('embedDiagram', !!responses.generate.find((x) => x === 'embedDiagram'));
         conf.set('excludeOtherFiles', !!responses.generate.find((x) => x === 'excludeOtherFiles'));
-        
+
         if (ver.isLatest) {
             conf.set('generateLocalImages', !!responses.generate.find((x) => x === 'generateLocalImages'));
         } else {

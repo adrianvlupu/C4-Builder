@@ -227,6 +227,12 @@ The project is still in it's early phase and I intend on using it on some actual
 
 # Change log
 
+## v0.2.16
+
+Partial build (image generation) [#55](https://github.com/adrianvlupu/C4-Builder/pull/58) ([MickeJohannesson](https://github.com/MickeJohannesson))
+
+Bugfixes
+
 ## v0.2.14
 
 Diagrams at arbitrary positions [#28](https://github.com/adrianvlupu/C4-Builder/pull/28) ([Sjuanola](https://github.com/sju66))

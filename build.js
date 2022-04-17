@@ -8,7 +8,6 @@ let docsifyTemplate = require('./docsify.template.js');
 const markdownpdf = require('md-to-pdf').mdToPdf;
 const http = require('http');
 
-const PUML_CHECKSUM_FILE = '_checksums.json';
 const DIST_BACKUP_FOLDER_SUFFIX = '_bk';
 
 const {
@@ -107,11 +106,11 @@ const generateTree = async (dir, options) => {
         });
 
         //copy all other files
-        const otherFiles = options.EXCLUDE_OTHER_FILES 
-            ? [] 
+        const otherFiles = options.EXCLUDE_OTHER_FILES
+            ? []
             : files.filter(
-                (x) => x.charAt(0) === '_' || ['.md', '.puml'].indexOf(path.extname(x).toLowerCase()) === -1
-            );
+                  (x) => x.charAt(0) === '_' || ['.md', '.puml'].indexOf(path.extname(x).toLowerCase()) === -1
+              );
 
         for (const otherFile of otherFiles) {
             if (fs.statSync(path.join(dir, otherFile)).isDirectory()) continue;
@@ -131,22 +130,12 @@ const generateTree = async (dir, options) => {
     return tree;
 };
 
-const generateImages = async (tree, options, onImageGenerated) => {
-    let oldChecksums = [];
+const generateImages = async (tree, options, onImageGenerated, conf) => {
+    // Get the old checksums (from last run) of all PUML-files
+    let oldChecksums = conf.get('checksums') || [];
     let newChecksums = [];
     const bkFolderName = options.DIST_FOLDER + DIST_BACKUP_FOLDER_SUFFIX;
 
-    // Get the old checksums (from last run) of all PUML-files
-    if (await fs.existsSync(PUML_CHECKSUM_FILE)) {
-        var fileContent = await readFile(PUML_CHECKSUM_FILE);
-        try{
-            oldChecksums = JSON.parse('' + fileContent);
-        }catch{
-            oldChecksums = [];
-            await fs.unlinkSync(PUML_CHECKSUM_FILE);
-        }
-    }
-    
     let totalImages = 0;
     let processedImages = 0;
 
@@ -154,8 +143,6 @@ const generateImages = async (tree, options, onImageGenerated) => {
     if (options.PLANTUML_VERSION === 'latest') ver = plantumlVersions.find((v) => v.isLatest);
     if (!ver) throw new Error(`PlantUML version ${options.PLANTUML_VERSION} not supported`);
 
-    process.env.PLANTUML_HOME = path.join(__dirname, 'vendor', ver.jar);
-    const plantuml = require('node-plantuml');
     const crypto = require('crypto');
 
     for (const item of tree) {
@@ -164,13 +151,17 @@ const generateImages = async (tree, options, onImageGenerated) => {
 
     for (const item of tree) {
         for (const pumlFile of item.pumlFiles) {
+            //There was a bug with this, that's why I require it inside the loop
+            process.env.PLANTUML_HOME = path.join(__dirname, 'vendor', ver.jar);
+            const plantuml = require('node-plantuml');
+
             // Calculate hash of current puml content
             let cksum = crypto
                 .createHash('sha256')
                 .update('' + pumlFile.content || '', 'utf-8')
                 .digest('hex');
 
-            // path to backup image file    
+            // path to backup image file
             let bkFilePath = path.join(
                 bkFolderName,
                 item.dir.replace(options.ROOT_FOLDER, ''),
@@ -182,7 +173,7 @@ const generateImages = async (tree, options, onImageGenerated) => {
                 options.DIST_FOLDER,
                 item.dir.replace(options.ROOT_FOLDER, ''),
                 `${path.parse(pumlFile.dir).name}.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
-                );
+            );
 
             // if checksum exists (PUML untouched) and file/image exists - copy image back from backup folder
             if (oldChecksums.find((x) => x === cksum) && (await fs.existsSync(bkFilePath))) {
@@ -190,7 +181,7 @@ const generateImages = async (tree, options, onImageGenerated) => {
             } else {
                 //write diagram as image
                 let stream = fs.createWriteStream(filePath);
-                
+
                 plantuml
                     .generate(path.join(item.dir, pumlFile.dir), {
                         format: pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
@@ -209,8 +200,8 @@ const generateImages = async (tree, options, onImageGenerated) => {
         }
     }
 
-    // store all puml checksums to json
-    await fs.writeFileSync(PUML_CHECKSUM_FILE, JSON.stringify(newChecksums));
+    // store all puml checksums
+    conf.set('checksums', newChecksums);
 };
 
 const compileDocument = async (md, item, options, getDiagram) => {
@@ -225,12 +216,12 @@ const compileDocument = async (md, item, options, getDiagram) => {
 
         let pumlRef;
         while ((pumlRef = regex.exec(content)) !== null) {
-            if(pumlRef && pumlRef[1]){
+            if (pumlRef && pumlRef[1]) {
                 const pumlFile = item.pumlFiles.find((x) => x.dir === pumlRef[1]);
                 if (pumlFile) {
                     alreadyIncludedPumls.push(pumlRef[1]);
                     content = content.replace(pumlRef[0], await getDiagram(item, pumlFile, options));
-                }    
+                }
             }
         }
         texts.push(content);
@@ -754,7 +745,7 @@ const generateWebMD = async (tree, options) => {
     return Promise.all(filePromises);
 };
 
-const build = async (options) => {
+const build = async (options, conf) => {
     let start_date = new Date();
     const bkFolderName = options.DIST_FOLDER + DIST_BACKUP_FOLDER_SUFFIX;
 
@@ -776,9 +767,14 @@ const build = async (options) => {
     console.log(chalk.blue(`parsed ${tree.length} folders`));
     if (options.GENERATE_LOCAL_IMAGES) {
         console.log(chalk.blue('generating images'));
-        await generateImages(tree, options, (count, total) => {
-            process.stdout.write(`processed ${count}/${total} images\r`);
-        });
+        await generateImages(
+            tree,
+            options,
+            (count, total) => {
+                process.stdout.write(`processed ${count}/${total} images\r`);
+            },
+            conf
+        );
         console.log('');
     }
     if (options.GENERATE_MD) {

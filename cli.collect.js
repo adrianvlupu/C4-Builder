@@ -6,7 +6,12 @@ const chalk = require('chalk');
 const { plantumlVersions } = require('./utils');
 
 const validate = (schema) => (answers) => {
-    return !schema.validate(answers).error;
+    //just in case
+    if (joi.validate) {
+        return !joi.validate(answers, schema).error;
+    } else {
+        return !schema.validate(answers).error;
+    }
 };
 
 module.exports = async (currentConfiguration, conf, program) => {

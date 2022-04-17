@@ -111,18 +111,6 @@ module.exports = async () => {
         //get options after wizard
         options = getOptions(conf);
         if (program.watch) {
-            //watch warning
-            if (options.GENERATE_PDF || options.GENERATE_COMPLETE_PDF_FILE || options.GENERATE_LOCAL_IMAGES) {
-                console.log(chalk.bold(chalk.yellow('\nWARNING:')));
-                console.log(
-                    chalk.bold(
-                        chalk.yellow(
-                            'Rebuilding with pdf or local image generation enabled will take a long time'
-                        )
-                    )
-                );
-            }
-
             watch(options.ROOT_FOLDER, { recursive: true }, async (evt, name) => {
                 // clearConsole();
                 // intro();
@@ -146,7 +134,7 @@ module.exports = async () => {
                 }
 
                 isBuilding = true;
-                await build(options);
+                await build(options, conf);
                 while (attemptedWatchBuild) {
                     attemptedWatchBuild = false;
                     await build(options);
@@ -156,7 +144,7 @@ module.exports = async () => {
         }
 
         isBuilding = true;
-        await build(options);
+        await build(options, conf);
         isBuilding = false;
 
         if (program.site) return await cmdSite(options, program);

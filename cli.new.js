@@ -11,7 +11,12 @@ const Configstore = require('configstore');
 const { readFile, writeFile, makeDirectory } = require('./utils.js');
 
 const validate = (schema) => (answers) => {
-    return !joi.validate(answers, schema).error;
+    //just in case
+    if (joi.validate) {
+        return !joi.validate(answers, schema).error;
+    } else {
+        return !schema.validate(answers).error;
+    }
 };
 
 const generateTemplate = async (dir, projectName, plantumlVersion) => {

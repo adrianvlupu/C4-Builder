@@ -281,6 +281,7 @@ module.exports = async (currentConfiguration, conf, program) => {
         currentConfiguration.EMBED_DIAGRAM === undefined ||
         currentConfiguration.INCLUDE_BREADCRUMBS === undefined ||
         currentConfiguration.INCLUDE_LINK_TO_DIAGRAM === undefined ||
+        currentConfiguration.EXCLUDE_OTHER_FILES === undefined ||
         program.config
     ) {
         let defaults = [
@@ -308,7 +309,13 @@ module.exports = async (currentConfiguration, conf, program) => {
                 ? null
                 : currentConfiguration.EMBED_DIAGRAM
                 ? 'embedDiagram'
+                : null,
+            currentConfiguration.EXCLUDE_OTHER_FILES === undefined
+                ? null
+                : currentConfiguration.EXCLUDE_OTHER_FILES
+                ? 'excludeOtherFiles'
                 : null
+
         ];
         let choices = [
             {
@@ -326,6 +333,10 @@ module.exports = async (currentConfiguration, conf, program) => {
             {
                 name: 'Embed SVG Diagram',
                 value: 'embedDiagram'
+            },
+            {
+                name: 'Exclude other files',
+                value: 'excludeOtherFiles'
             }
         ];
         if (ver.isLatest)
@@ -345,6 +356,8 @@ module.exports = async (currentConfiguration, conf, program) => {
         conf.set('includeLinkToDiagram', !!responses.generate.find((x) => x === 'includeLinkToDiagram'));
         conf.set('diagramsOnTop', !!responses.generate.find((x) => x === 'diagramsOnTop'));
         conf.set('embedDiagram', !!responses.generate.find((x) => x === 'embedDiagram'));
+        conf.set('excludeOtherFiles', !!responses.generate.find((x) => x === 'excludeOtherFiles'));
+        
         if (ver.isLatest) {
             conf.set('generateLocalImages', !!responses.generate.find((x) => x === 'generateLocalImages'));
         } else {

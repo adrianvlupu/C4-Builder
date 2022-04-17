@@ -128,6 +128,11 @@ Charset: ${
             ? chalk.green(currentConfiguration.CHARSET)
             : chalk.red('not set')
     }
+Exclude other files: ${
+    currentConfiguration.EXCLUDE_OTHER_FILES !== undefined
+        ? chalk.green(currentConfiguration.EXCLUDE_OTHER_FILES)
+        : chalk.red('not set')
+    }
 `);
     return;
 };

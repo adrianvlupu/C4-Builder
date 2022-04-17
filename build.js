@@ -6,8 +6,10 @@ const path = require('path');
 const fsextra = require('fs-extra');
 let docsifyTemplate = require('./docsify.template.js');
 const markdownpdf = require('md-to-pdf').mdToPdf;
-
 const http = require('http');
+
+const PUML_CHECKSUM_FILE = '_checksums.json';
+const DIST_BACKUP_FOLDER_SUFFIX = '_bk';
 
 const {
     encodeURIPath,
@@ -17,6 +19,7 @@ const {
     plantUmlServerUrl,
     plantumlVersions
 } = require('./utils.js');
+const { date } = require('joi');
 
 const getMime = (format) => {
     if (format == 'svg') return `image/svg+xml`;
@@ -129,43 +132,85 @@ const generateTree = async (dir, options) => {
 };
 
 const generateImages = async (tree, options, onImageGenerated) => {
+    let oldChecksums = [];
+    let newChecksums = [];
+    const bkFolderName = options.DIST_FOLDER + DIST_BACKUP_FOLDER_SUFFIX;
+
+    // Get the old checksums (from last run) of all PUML-files
+    if (await fs.existsSync(PUML_CHECKSUM_FILE)) {
+        var fileContent = await readFile(PUML_CHECKSUM_FILE);
+        try{
+            oldChecksums = JSON.parse('' + fileContent);
+        }catch{
+            oldChecksums = [];
+            await fs.unlinkSync(PUML_CHECKSUM_FILE);
+        }
+    }
+    
     let totalImages = 0;
     let processedImages = 0;
+
+    let ver = plantumlVersions.find((v) => v.version === options.PLANTUML_VERSION);
+    if (options.PLANTUML_VERSION === 'latest') ver = plantumlVersions.find((v) => v.isLatest);
+    if (!ver) throw new Error(`PlantUML version ${options.PLANTUML_VERSION} not supported`);
+
+    process.env.PLANTUML_HOME = path.join(__dirname, 'vendor', ver.jar);
+    const plantuml = require('node-plantuml');
+    const crypto = require('crypto');
 
     for (const item of tree) {
         totalImages += item.pumlFiles.length;
     }
+
     for (const item of tree) {
         for (const pumlFile of item.pumlFiles) {
-            //write diagram as image
-            let stream = fs.createWriteStream(
-                path.join(
-                    options.DIST_FOLDER,
-                    item.dir.replace(options.ROOT_FOLDER, ''),
-                    `${path.parse(pumlFile.dir).name}.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
-                )
+            // Calculate hash of current puml content
+            let cksum = crypto
+                .createHash('sha256')
+                .update('' + pumlFile.content || '', 'utf-8')
+                .digest('hex');
+
+            // path to backup image file    
+            let bkFilePath = path.join(
+                bkFolderName,
+                item.dir.replace(options.ROOT_FOLDER, ''),
+                `${path.parse(pumlFile.dir).name}.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
             );
 
-            let ver = plantumlVersions.find((v) => v.version === options.PLANTUML_VERSION);
-            if (options.PLANTUML_VERSION === 'latest') ver = plantumlVersions.find((v) => v.isLatest);
-            if (!ver) throw new Error(`PlantUML version ${options.PLANTUML_VERSION} not supported`);
+            // path to image in dist folder
+            let filePath = path.join(
+                options.DIST_FOLDER,
+                item.dir.replace(options.ROOT_FOLDER, ''),
+                `${path.parse(pumlFile.dir).name}.${pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT}`
+                );
 
-            process.env.PLANTUML_HOME = path.join(__dirname, 'vendor', ver.jar);
-            const plantuml = require('node-plantuml');
+            // if checksum exists (PUML untouched) and file/image exists - copy image back from backup folder
+            if (oldChecksums.find((x) => x === cksum) && (await fs.existsSync(bkFilePath))) {
+                await fsextra.copyFileSync(bkFilePath, filePath);
+            } else {
+                //write diagram as image
+                let stream = fs.createWriteStream(filePath);
+                
+                plantuml
+                    .generate(path.join(item.dir, pumlFile.dir), {
+                        format: pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
+                        charset: options.CHARSET,
+                        include: item.dir
+                    })
+                    .out.pipe(stream);
 
-            plantuml
-                .generate(path.join(item.dir, pumlFile.dir), {
-                    format: pumlFile.isDitaa ? 'png' : options.DIAGRAM_FORMAT,
-                    charset: options.CHARSET,
-                    include: item.dir
-                })
-                .out.pipe(stream);
-
-            await new Promise((resolve) => stream.on('finish', resolve));
+                await new Promise((resolve) => stream.on('finish', resolve));
+            }
             processedImages++;
             if (onImageGenerated) onImageGenerated(processedImages, totalImages);
+
+            // Add puml checksum
+            newChecksums.push(cksum);
         }
     }
+
+    // store all puml checksums to json
+    await fs.writeFileSync(PUML_CHECKSUM_FILE, JSON.stringify(newChecksums));
 };
 
 const compileDocument = async (md, item, options, getDiagram) => {
@@ -711,9 +756,18 @@ const generateWebMD = async (tree, options) => {
 
 const build = async (options) => {
     let start_date = new Date();
+    const bkFolderName = options.DIST_FOLDER + DIST_BACKUP_FOLDER_SUFFIX;
 
-    //clear dist directory
-    await fsextra.emptyDir(options.DIST_FOLDER);
+    // Generating local images, remove old backup image folder, rename current dist folder to new backup
+    if (options.GENERATE_LOCAL_IMAGES) {
+        await fsextra.removeSync(bkFolderName);
+        if (await fsextra.existsSync(options.DIST_FOLDER)) {
+            await fsextra.rename(options.DIST_FOLDER, bkFolderName);
+        }
+    } else {
+        //clear dist directory
+        await fsextra.emptyDir(options.DIST_FOLDER);
+    }
     await makeDirectory(path.join(options.DIST_FOLDER));
 
     //actual build
@@ -753,6 +807,9 @@ const build = async (options) => {
         });
         console.log('');
     }
+
+    // Remove image backup folder
+    await fsextra.removeSync(bkFolderName);
 
     console.log(chalk.green(`built in ${(new Date() - start_date) / 1000} seconds`));
 };

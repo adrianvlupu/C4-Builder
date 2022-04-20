@@ -35,6 +35,10 @@ module.exports = (options) => {
             !!options.supportSearch &&
             `<script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>`
         }
+        ${
+            !!options.executeScript &&
+            `<script src="//unpkg.com/swagger-ui-dist/swagger-ui-bundle.js"></script>`
+        }
     </body>
     
     </html>`;

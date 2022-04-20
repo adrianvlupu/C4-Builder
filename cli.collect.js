@@ -197,6 +197,17 @@ module.exports = async (currentConfiguration, conf, program) => {
             conf.set('repoUrl', webOptions.repoUrl);
 
             webOptions = await inquirer.prompt({
+                type: 'confirm',
+                name: 'executeScript',
+                message: 'Support script execution and OpenAPI rendering?',
+                default: 
+                    currentConfiguration.executeScript === undefined
+                    ? false
+                    : currentConfiguration.executeScript
+            });
+            conf.set('executeScript', webOptions.executeScript);
+
+            webOptions = await inquirer.prompt({
                 type: 'input',
                 name: 'docsifyTemplate',
                 message: 'Path to a specific Docsify template?',

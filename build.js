@@ -731,7 +731,8 @@ const generateWebMD = async (tree, options) => {
                 },
                 stylesheet: options.WEB_THEME,
                 alias: { '/.*/_sidebar.md': '/_sidebar.md' },
-                supportSearch: options.SUPPORT_SEARCH
+                supportSearch: options.SUPPORT_SEARCH,
+                executeScript: options.EXECUTE_SCRIPT
             })
         )
     );

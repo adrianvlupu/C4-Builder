@@ -52,6 +52,7 @@ const getOptions = (conf) => {
         MD_FILE_NAME: 'README',
         WEB_FILE_NAME: 'HOME',
         SUPPORT_SEARCH: conf.get('supportSearch'),
+        EXECUTE_SCRIPT: conf.get('executeScript'),
         EXCLUDE_OTHER_FILES: conf.get('excludeOtherFiles')
     };
 };

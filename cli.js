@@ -64,6 +64,7 @@ module.exports = async () => {
         .option('list', 'display the current configuration')
         .option('reset', 'clear all configuration')
         .option('site', 'serve the generated site')
+        .option('serve', 'serve the generated site')
         .option('build', 'generate the site files')
         .option('-w, --watch', 'watch for changes and rebuild')
         .option('docs', 'a brief explanation for the available configuration options')
@@ -144,13 +145,13 @@ module.exports = async () => {
             });
         }
 
-        if (program.build) {
+        if (program.build || program.site) {
             isBuilding = true;
             await build(options, conf);
             isBuilding = false;
         }
 
-        if (program.site) return await cmdSite(options, program);
+        if (program.serve || program.site) return await cmdSite(options, program);
 
         if (options.GENERATE_WEBSITE && !program.watch) {
             console.log(chalk.gray('\nto view the generated website run'));

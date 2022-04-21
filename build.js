@@ -55,6 +55,11 @@ const generateTree = async (dir, options) => {
     let tree = [];
 
     const build = async (dir, parent) => {
+        // Skip output folder - this allows a user to use the top-level folder as ROOT_FOLDER.
+        if (dir === options.DIST_FOLDER) {
+            return
+        }
+
         let name = getFolderName(dir, options.ROOT_FOLDER, options.HOMEPAGE_NAME);
         let item = tree.find((x) => x.dir === dir);
         if (!item) {

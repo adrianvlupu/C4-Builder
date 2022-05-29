@@ -61,6 +61,7 @@ module.exports = async () => {
         .version(package.version)
         .option('new', 'create a new project from template')
         .option('config', 'change configuration for the current directory')
+        .option('-c, --config-file <.c4builder>', 'set the configuration file relative path')
         .option('list', 'display the current configuration')
         .option('reset', 'clear all configuration')
         .option('site', 'serve the generated site')
@@ -74,7 +75,7 @@ module.exports = async () => {
         conf = new Configstore(
             process.cwd().split(path.sep).splice(1).join('_'),
             {},
-            { configPath: path.join(process.cwd(), '.c4builder') }
+            { configPath: path.join(process.cwd(), program.configFile ?? '.c4builder') }
         );
 
     if (program.docs) return cmdHelp();

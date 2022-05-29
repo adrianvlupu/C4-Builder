@@ -49,16 +49,17 @@ PS C:\docprojects\Online Banking> c4builder --help
 Usage: index [options]
 
 Options:
-  -V, --version   output the version number
-  new             create a new project from template
-  config          change configuration for the current directory
-  list            display the current configuration
-  reset           clear all configuration
-  site            serve the generated site
-  -w, --watch     watch for changes and rebuild
-  docs            a brief explanation for the available configuration options
-  -p, --port <n>  port used for serving the generated site
-  -h, --help      output usage information
+  -V, --version                     output the version number
+  new                               create a new project from template
+  config                            change configuration for the current directory
+  list                              display the current configuration
+  reset                             clear all configuration
+  site                              serve the generated site
+  -w, --watch                       watch for changes and rebuild
+  docs                              a brief explanation for the available configuration options
+  -p, --port <n>                    port used for serving the generated site
+  -c, --config-file <.c4builder>    set the configuration file relative path
+  -h, --help                        output usage information
 ```
 
 By default, running `c4builder` will attempt to build the project.

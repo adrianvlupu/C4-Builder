@@ -149,6 +149,8 @@ const generateImages = async (tree, options, onImageGenerated, conf) => {
         totalImages += item.pumlFiles.length;
     }
 
+    let taskList = [];
+
     for (const item of tree) {
         for (const pumlFile of item.pumlFiles) {
             //There was a bug with this, that's why I require it inside the loop
@@ -190,15 +192,19 @@ const generateImages = async (tree, options, onImageGenerated, conf) => {
                     })
                     .out.pipe(stream);
 
-                await new Promise((resolve) => stream.on('finish', resolve));
+                taskList.push(new Promise((resolve) => stream.on('finish', resolve)));
             }
-            processedImages++;
-            if (onImageGenerated) onImageGenerated(processedImages, totalImages);
+            var taskPromises = Promise.all(taskList).then((result) => {
+                processedImages++;
+                if (onImageGenerated) onImageGenerated(processedImages, totalImages);
 
-            // Add puml checksum
-            newChecksums.push(cksum);
+                // Add puml checksum
+                newChecksums.push(cksum);
+            })
         }
     }
+
+    await taskPromises
 
     // store all puml checksums
     conf.set('checksums', newChecksums);

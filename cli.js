@@ -21,7 +21,7 @@ const intro = () => {
     console.log(chalk.gray('Blow up your software documentation writing skills'));
 };
 
-const getOptions = (conf) => {
+const getOptions = (conf, expand=false) => {
     return {
         PLANTUML_VERSION: conf.get('plantumlVersion'),
         GENERATE_MD: conf.get('generateMD'),
@@ -42,7 +42,7 @@ const getOptions = (conf) => {
         INCLUDE_BREADCRUMBS: conf.get('includeBreadcrumbs'),
         INCLUDE_TABLE_OF_CONTENTS: conf.get('includeTableOfContents'),
         INCLUDE_LINK_TO_DIAGRAM: conf.get('includeLinkToDiagram'),
-        PDF_CSS: conf.get('pdfCss') || path.join(__dirname, 'pdf.css'),
+        PDF_CSS: expand ? conf.get('pdfCss') || path.join(__dirname, 'pdf.css'): conf.get('pdfCss'),
         DIAGRAMS_ON_TOP: conf.get('diagramsOnTop'),
         CHARSET: conf.get('charset'),
         WEB_PORT: conf.get('webPort'),
@@ -109,7 +109,7 @@ module.exports = async () => {
         let isBuilding = false;
         let attemptedWatchBuild = false;
         //get options after wizard
-        options = getOptions(conf);
+        options = getOptions(conf, expand=true);
         if (program.watch) {
             watch(options.ROOT_FOLDER, { recursive: true }, async (evt, name) => {
                 // clearConsole();

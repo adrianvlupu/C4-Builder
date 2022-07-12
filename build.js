@@ -7,6 +7,7 @@ const fsextra = require('fs-extra');
 let docsifyTemplate = require('./docsify.template.js');
 const markdownpdf = require('md-to-pdf').mdToPdf;
 const http = require('http');
+const Configstore = require('configstore');
 
 const DIST_BACKUP_FOLDER_SUFFIX = '_bk';
 
@@ -767,13 +768,22 @@ const build = async (options, conf) => {
     console.log(chalk.blue(`parsed ${tree.length} folders`));
     if (options.GENERATE_LOCAL_IMAGES) {
         console.log(chalk.blue('generating images'));
+        checkums_conf = conf
+        if (options.CHECKSUMS_FILE !== undefined) {
+            console.log(options.CHECKSUMS_FILE)
+            checkums_conf = new Configstore(
+                process.cwd().split(path.sep).splice(1).join('_'),
+                {},
+                { configPath: path.join(process.cwd(), options.CHECKSUMS_FILE) }
+            );
+        }
         await generateImages(
             tree,
             options,
             (count, total) => {
                 process.stdout.write(`processed ${count}/${total} images\r`);
             },
-            conf
+            checkums_conf
         );
         console.log('');
     }

@@ -111,6 +111,7 @@ module.exports = async () => {
         let attemptedWatchBuild = false;
         //get options after wizard
         options = getOptions(conf, expand=true);
+        console.log(options)
         if (program.watch) {
             watch(options.ROOT_FOLDER, { recursive: true }, async (evt, name) => {
                 // clearConsole();

@@ -770,7 +770,7 @@ const build = async (options, conf) => {
         console.log(chalk.blue('generating images'));
         checkums_conf = conf
         if (options.CHECKSUMS_FILE !== undefined) {
-            console.log(options.CHECKSUMS_FILE)
+            // console.log(options.CHECKSUMS_FILE)
             checkums_conf = new Configstore(
                 process.cwd().split(path.sep).splice(1).join('_'),
                 {},

@@ -379,7 +379,7 @@ const generateCompletePDF = async (tree, options) => {
     //convert to pdf
     await markdownpdf(
         {
-            path: './' + path.join(options.DIST_FOLDER, `${options.PROJECT_NAME}_TEMP.md`)
+            path: path.join(options.DIST_FOLDER, `${options.PROJECT_NAME}_TEMP.md`)
         },
         {
             stylesheet: [options.PDF_CSS],
@@ -762,7 +762,7 @@ const build = async (options, conf) => {
     await makeDirectory(path.join(options.DIST_FOLDER));
 
     //actual build
-    console.log(chalk.green(`\nbuilding documentation in ./${options.DIST_FOLDER}`));
+    console.log(chalk.green(`\nbuilding documentation in ${options.DIST_FOLDER}`));
     let tree = await generateTree(options.ROOT_FOLDER, options);
     console.log(chalk.blue(`parsed ${tree.length} folders`));
     if (options.GENERATE_LOCAL_IMAGES) {

@@ -1,5 +1,5 @@
 FROM openjdk:11
-RUN curl -fsSL https://deb.nodesource.com/setup_17.x | bash -
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get update && apt-get install -y nodejs graphviz chromium xvfb
 
 RUN npm i -g c4builder

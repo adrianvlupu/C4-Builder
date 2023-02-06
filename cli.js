@@ -154,8 +154,6 @@ module.exports = async () => {
         if (options.GENERATE_WEBSITE && !program.watch) {
             console.log(chalk.gray('\nto view the generated website run'));
             console.log(`> c4builder site`);
-            // process.kill(process.pid, 'SIGTERM');
-            process.exit(0);
         }
     }
 };

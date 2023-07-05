@@ -640,11 +640,14 @@ const generateWebMD = async (tree, options) => {
     let filePromises = [];
     let docsifySideBar = '';
 
+    const getWebFileName = (originalFileName) => options.WEB_FILE_NAME || originalFileName;
+
     for (const item of tree) {
         //sidebar
         docsifySideBar += `${'  '.repeat(item.level - 1)}* [${item.name}](${encodeURIPath(
-            path.join(...path.join(item.dir).split(path.sep).splice(1), options.WEB_FILE_NAME)
+            path.join(...path.join(item.dir).split(path.sep).splice(1), getWebFileName(item.name))
         )})\n`;
+
         let name = getFolderName(item.dir, options.ROOT_FOLDER, options.HOMEPAGE_NAME);
 
         //title
@@ -705,7 +708,7 @@ const generateWebMD = async (tree, options) => {
                 path.join(
                     options.DIST_FOLDER,
                     item.dir.replace(options.ROOT_FOLDER, ''),
-                    `${options.WEB_FILE_NAME}.md`
+                    `${getWebFileName(item.name)}.md`
                 ),
                 MD
             )
@@ -716,6 +719,8 @@ const generateWebMD = async (tree, options) => {
         docsifyTemplate = require(path.join(process.cwd(), options.DOCSIFY_TEMPLATE));
     }
 
+    const getRootName = () => tree.find((item) => !item.parent);
+
     //docsify homepage
     filePromises.push(
         writeFile(
@@ -725,7 +730,7 @@ const generateWebMD = async (tree, options) => {
                 repo: options.REPO_NAME,
                 loadSidebar: true,
                 auto2top: true,
-                homepage: `${options.WEB_FILE_NAME}.md`,
+                homepage: `${options.WEB_FILE_NAME || getRootName().name}.md`,
                 plantuml: {
                     skin: 'classic'
                 },

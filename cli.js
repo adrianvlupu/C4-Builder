@@ -50,7 +50,7 @@ const getOptions = (conf) => {
         PLANTUML_SERVER_URL: conf.get('plantumlServerUrl'),
         DIAGRAM_FORMAT: conf.get('diagramFormat'),
         MD_FILE_NAME: 'README',
-        WEB_FILE_NAME: 'HOME',
+        WEB_FILE_NAME: conf.get('webFileName'),
         SUPPORT_SEARCH: conf.get('supportSearch'),
         EXCLUDE_OTHER_FILES: conf.get('excludeOtherFiles')
     };

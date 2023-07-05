@@ -640,11 +640,25 @@ const generateWebMD = async (tree, options) => {
     let filePromises = [];
     let docsifySideBar = '';
 
+    const isExcluded = (dir) => {
+        if (!Array.isArray(options.EXCLUDE_SIDEBAR_FOLDER_BY_PATH)) return false;
+
+        return options.EXCLUDE_SIDEBAR_FOLDER_BY_PATH.find((pathToExclude) => {
+            const isString = typeof pathToExclude === 'string';
+
+            if (isString) return dir.startsWith(pathToExclude);
+
+            return false;
+        });
+    };
+
     for (const item of tree) {
         //sidebar
-        docsifySideBar += `${'  '.repeat(item.level - 1)}* [${item.name}](${encodeURIPath(
-            path.join(...path.join(item.dir).split(path.sep).splice(1), options.WEB_FILE_NAME)
-        )})\n`;
+        if (!isExcluded(item.dir)) {
+            docsifySideBar += `${'  '.repeat(item.level - 1)}* [${item.name}](${encodeURIPath(
+                path.join(...path.join(item.dir).split(path.sep).splice(1), options.WEB_FILE_NAME)
+            )})\n`;
+        }
         let name = getFolderName(item.dir, options.ROOT_FOLDER, options.HOMEPAGE_NAME);
 
         //title

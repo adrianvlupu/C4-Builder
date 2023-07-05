@@ -42,6 +42,7 @@ const getOptions = (conf) => {
         INCLUDE_BREADCRUMBS: conf.get('includeBreadcrumbs'),
         INCLUDE_TABLE_OF_CONTENTS: conf.get('includeTableOfContents'),
         INCLUDE_LINK_TO_DIAGRAM: conf.get('includeLinkToDiagram'),
+        EXCLUDE_SIDEBAR_FOLDER_BY_PATH: conf.get('excludeSidebarFolderByPath'),
         PDF_CSS: conf.get('pdfCss') || path.join(__dirname, 'pdf.css'),
         DIAGRAMS_ON_TOP: conf.get('diagramsOnTop'),
         CHARSET: conf.get('charset'),

@@ -137,7 +137,7 @@ module.exports = async () => {
                 await build(options, conf);
                 while (attemptedWatchBuild) {
                     attemptedWatchBuild = false;
-                    await build(options);
+                    await build(options, conf);
                 }
                 isBuilding = false;
             });

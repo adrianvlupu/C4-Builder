@@ -1,9 +1,17 @@
 FROM openjdk:11
-RUN curl -fsSL https://deb.nodesource.com/setup_17.x | bash -
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get update && apt-get install -y nodejs graphviz chromium xvfb
 
 RUN npm i -g c4builder
-    
+
+# monkey patch c4builder with the latest plantUML version
+RUN version="1.2023.10" \
+    && cd "$(npm root -g)/c4builder" \
+    && wget https://github.com/plantuml/plantuml/releases/download/v${version}/plantuml-${version}.jar -O ./vendor/plantuml-${version}.jar \
+    && old_version=$(awk '/version:/ {match($2, /[0-9.]+/); v=substr($2, RSTART, RLENGTH)} /isLatest: true/ {print v}' utils.js | tr -d "',") \
+    && sed -i "s/$old_version/$version/g" utils.js
+#end monkey patch
+
 RUN useradd defaultuser -u 1000 -s /bin/bash -d /home/defaultuser -m \
     && echo 'exec chromium $@ --no-sandbox --disable-setuid-sandbox' > /usr/bin/chromium.sh \
     && chmod a=xr /usr/bin/chromium.sh
